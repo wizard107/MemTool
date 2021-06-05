@@ -43,8 +43,8 @@ public class LoginGUI extends MasterGUI{
       //backIconHero = new JLabel(loginHeroImage);
       screenTitle = new Label(lgnBox.x, lgnBox.y - 10, "Login");
       //backIconHero.setBounds(200, 250, 400, 400);
-      //userField.setSize(210, userField.getHeight());
-      userField.setSize(210, 40);
+      userField.setSize(210, userField.getHeight());
+      //userField.setSize(210, 40);
       userField.setCaretColor(Color.WHITE);
       passField.setBounds(lgnBox.x, lgnBox.y + 120, 210, 40);
       placeFieldLabel(userField, "Username", panel);

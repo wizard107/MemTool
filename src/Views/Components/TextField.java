@@ -3,8 +3,36 @@ package Views.Components;
 import java.awt.Color;
 
 import javax.swing.*;
-
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.AbstractDocument;
 public class TextField extends JTextField{
+    private final int WIDTH = 310;
+    private final int HEIGHT = 40;
+    /*public class LimitInputLength extends DocumentFilter {
+      private int limit;
+
+      public LimitInputLength(int limit) {
+        if (limit <= 0) {
+          throw new IllegalArgumentException("Limit can not be <= 0");
+        }
+        this.limit = limit;
+      }
+
+      @Override
+      public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+          throws BadLocationException {
+        int currentLength = fb.getDocument().getLength();
+        int overLimit = (currentLength + text.length()) - limit - length;
+        if (overLimit > 0) {
+          text = text.substring(0, text.length() - overLimit);
+        }
+        if (text.length() > 0) {
+          super.replace(fb, offset, length, text, attrs);
+        }
+      }
+    }*/
     public TextField(int x, int y, String title) {
         super(title);
         this.setBounds(x, y, WIDTH, HEIGHT);
@@ -28,5 +56,7 @@ public class TextField extends JTextField{
         setBackground(new Color(240, 240, 245));
         setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
       }
-    
+      /*public void setMaximumLength(int limit) {
+        ((AbstractDocument) this.getDocument()).setDocumentFilter(new LimitInputLength(limit));
+      }*/
 }
