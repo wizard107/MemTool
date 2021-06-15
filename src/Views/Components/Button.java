@@ -28,12 +28,30 @@ public class Button extends JButton implements MouseListener {
         filled = true;
       }
     
+    public Button(int x, int y, String text, Color color, int w_new, int h_new) {
+        super(text);
+        defaultSettings(w_new, h_new);
+        setColor(color);
+        setLocation(x, y);
+        setBackground(color);
+        setDark(true);
+        filled = true;
+      }    
 
 
 
     public Button(int x, int y, String text) {
         super(text);
         defaultSettings();
+        setLocation(x, y);
+        setBackground(new Color(55, 55, 70));
+        setDark(true);
+        setContentAreaFilled(false);
+        filled = false;
+      }
+      public Button(int x, int y, String text, int w, int h) {
+        super(text);
+        defaultSettings(w,h);
         setLocation(x, y);
         setBackground(new Color(55, 55, 70));
         setDark(true);
@@ -48,6 +66,13 @@ public class Button extends JButton implements MouseListener {
         setBorderPainted(false);
         addMouseListener(this);
     }
+    public void defaultSettings(int width_new, int height_new){
+      setFont(MasterGUI.basicFont);
+      setCursor(cursor);
+      setSize(width_new, height_new);
+      setBorderPainted(false);
+      addMouseListener(this);
+  }
 
     private void setColor(Color color) {
         this.setBackground(color);

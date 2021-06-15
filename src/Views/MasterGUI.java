@@ -5,24 +5,36 @@ import javax.swing.text.JTextComponent;
 import Views.Components.Button;
 import Views.Components.Label;
 import Views.Components.Panel;
-
+import java.awt.FontFormatException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Insets;
+import java.io.File;
+import java.io.IOException;
 
 public class MasterGUI extends JFrame{
     public static Font basicFont = new Font("Arial", Font.PLAIN, 15);
+    public static Font basicFontFat = new Font("Arial", Font.BOLD, 15);
+    public static Color black_gray = new Color(55,55,70);
+    public static Color purple = new Color(128,131,201);
+    public static Font poppinsFont;
+    public static Font poppinsFontBig;
+    public static Font bodyFont;
+    private static File fileRoot = new File(System.getProperty("user.dir"));
+    private static String imagesRoot = "/assets/images/";
+    public static ImageIcon learnPNG = new ImageIcon(fileRoot + imagesRoot + "learn.png");
     protected static Panel panel = new Panel();
     public static void placeFieldLabel(Component comp, String name, JPanel panel) {
-        Label label = new Label(comp.getX(), comp.getY() - 25, name);
+        Label label = new Label(comp.getX(), comp.getY() - 25, name, null);
         panel.add(label);
       }
     public MasterGUI() {
         //setIconImage(favicon.getImage());
         setResizable(false);
         setLayout(null);
-        panel.setBackground(new Color(55, 55, 70));
+        //panel.setBackground(new Color(55, 55, 70));
+        panel.setBackground(new Color(255, 255, 255));
         panel.setLayout(null);
         add(panel);
 
@@ -31,7 +43,22 @@ public class MasterGUI extends JFrame{
           } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
               | UnsupportedLookAndFeelException ex) {
           }
-
+        
+          try {
+            /*bodyFont = Font
+                .createFont(Font.TRUETYPE_FONT, new File(fileRoot + "/assets/fonts/UniversLTStd.otf"))
+                .deriveFont(13f);
+      */
+            poppinsFont = Font
+                .createFont(Font.TRUETYPE_FONT, new File(fileRoot + "/assets/fonts/Poppins-Regular.ttf"))
+                .deriveFont(16f);
+            poppinsFontBig = Font.createFont(Font.TRUETYPE_FONT, new File(fileRoot + "/assets/fonts/Poppins-Regular.ttf"))
+            .deriveFont(20f);
+          } catch (IOException | FontFormatException e) {
+            System.out.println("MasterGUI" + e.getMessage());
+            bodyFont = basicFont; // if font asset import failed, fall back to Arial
+            poppinsFont = bodyFont;
+          }  
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
               //DatabaseAPI.closeDatabase();
@@ -46,27 +73,35 @@ public class MasterGUI extends JFrame{
           foreground = Color.WHITE;
           background = new Color(60, 60, 75);
         } else if (colorMode == "light") {
-          foreground = new Color(60, 60, 75);;
+          foreground = new Color(60, 60, 75);
+          //foreground = new Color(128,131,201);
           background = new Color(240, 240, 245);
-        } else {
+        }
+          else if (colorMode == "purple"){
+            foreground = new Color(128,131,201);
+            background = new Color(240, 240, 245);
+          }
+        else {
           throw new IllegalArgumentException("Invalid color mode.");
         }
     
         for (Component c : panel.getComponents()) {
           if (c instanceof JLabel) {
             if (c instanceof Label && !((Label) c).getEditable()) {
-              c.setFont(new Font("Arial", Font.PLAIN, 15));
+              //c.setFont(new Font("Arial", Font.PLAIN, 15));
+              c.setFont(poppinsFont);
               c.setForeground(foreground);
             }
           }
           if (c instanceof JTextField) {
-            c.setFont(new Font("Arial", Font.PLAIN, 15));
+            //c.setFont(new Font("Arial", Font.PLAIN, 15));
+            c.setFont(poppinsFont);
             c.setBackground(background);
             c.setForeground(foreground);
             ((JTextComponent) c).setCaretColor(foreground);
           }
           if (c instanceof JButton) {
-            c.setFont(new Font("Arial", Font.PLAIN, 15));
+            c.setFont(poppinsFont);
             if (((Button) c).getDark()) {
               ((AbstractButton) c).setForeground(Color.WHITE);
             }
