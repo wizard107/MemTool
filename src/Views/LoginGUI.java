@@ -4,7 +4,10 @@ import javax.swing.*;
 import Views.Components.Button;
 import Views.Components.Label;
 import Views.Components.TextField;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.Point;
 import java.awt.Color;
 
@@ -26,8 +29,8 @@ public class LoginGUI extends MasterGUI{
         panel.updateBounds(this);
         
         createLoginFields();
-        //registerBtnAction();
-        //loginBtnAction();
+        registerBtnAction();
+        loginBtnAction();
         //getRootPane().setDefaultButton(loginBtn);
         
         setComponentStyles(panel, "purple");
@@ -65,5 +68,27 @@ public class LoginGUI extends MasterGUI{
       panel.add(learnImage);
       panel.add(screenTitle);
       panel.add(screenDescription);
+    }
+
+    public void loginBtnAction(){
+      JFrame frame = this;
+      loginBtn.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){
+        frame.dispose();
+        frame.remove(panel); //removes LoginGUI screen, after that new MainGUI is started
+        new MainGUI();
+        }
+      });
+    }
+
+    public void registerBtnAction() {
+      registerBtn.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          panel.removeAll();
+          dispose();
+          RegisterGUI register = new RegisterGUI();
+          register.setVisible(true);
+        }
+      });
     }
 }
