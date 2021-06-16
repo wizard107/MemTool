@@ -1,5 +1,7 @@
 package Controller;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.sql.*;
 
 public class DatabaseAPI {
@@ -50,6 +52,86 @@ public class DatabaseAPI {
         }
     }
 
+    /**
+     * Verify if given username and pass correspond to a user in the database.
+     *
+     * @param username - String of username
+     * @param password - String of <i>hashed<i> password
+     * @return <code>true</code> if user exists
+     * @throws SQLException in case of errors during queries.
+     */
+    public static boolean verifyUser(String username, String password) {
+        Connection connection = connectDatabase();
+        ResultSet userData = fetchUserData(connection, username);
+        if(userData == null) {
+            System.out.println("EMPTY DATASET");
+            return false;
+        }
+        try {
+            String saltHash = userData.getString("password");
+            String passwordEncrpyted = PasswordEncryption.verify(password, saltHash);
+
+            String sql = "SELECT * FROM User WHERE username = ? AND password = ?";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setString(2, passwordEncrpyted);
+
+            ResultSet result = statement.executeQuery();
+
+            Boolean isUser = result.next();
+            statement.close();
+            // closeDatabase();
+            System.out.println("Verified user.");
+            return isUser;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Fetch user data from database. This is only called by other user related DB
+     * functions.
+     *
+     * @param connection - SQL jdbc connection object, connection to DB
+     * @param key        - used to find a certain user
+     * @return SQL result of data entry or <code>null</code> if user doesn't exist
+     */
+    private static <T> ResultSet fetchUserData(Connection connection, T key) {
+        String sqlColumn = "";
+
+        if (key instanceof String)
+            sqlColumn = "username";
+        else
+            sqlColumn = "user_id";
+
+        String query = "SELECT * FROM User WHERE " + sqlColumn + " = ?";
+        try{
+            PreparedStatement statement = connection.prepareStatement(query);
+            if (key instanceof String) {
+                String username = key.toString();
+                statement.setString(1, username);
+            } else if (key instanceof Integer) {
+                Integer userId = ((Integer) key).intValue();
+                statement.setInt(1, userId);
+            }
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                System.out.println("Fetching user data.");
+                return result;
+            }
+            return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e);
+            return null;
+        }
+    }
+
     public static void main(String[] args) {
         try {
             connectDatabase();
@@ -62,9 +144,26 @@ public class DatabaseAPI {
             statement.close();
             closeDatabase();
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        /*
+        String path = System.getProperty("user.home") + File.separator + "Documents";
+        path += File.separator + "Your Custom Folder";
+        File customDir = new File(path);
+
+        if (customDir.exists()) {
+            System.out.println(customDir + " already exists");
+        } else if (customDir.mkdirs()) {
+            System.out.println(customDir + " was created");
+        } else {
+            System.out.println(customDir + " was not created");
+        }
+
+        Path file = new Path(path);
+
+         */
+
     }
 
 
