@@ -1,6 +1,7 @@
 package Views.Components;
 import javax.swing.*;
 
+import Views.MainGUI;
 import Views.MasterGUI;
 
 import java.awt.event.MouseEvent;
@@ -16,7 +17,10 @@ public class Button extends JButton implements MouseListener {
     private int width = 100;
     private int height = 40;
     private boolean dark = true;
+    private ActionListener switchPanelAction;
     private boolean filled = true;
+    private boolean isTab = false;
+    private Color inactiveColor;
     private Cursor cursor = new Cursor(Cursor.HAND_CURSOR);  
     public Button(int x, int y, String text, Color color) {
         super(text);
@@ -27,7 +31,17 @@ public class Button extends JButton implements MouseListener {
         setDark(true);
         filled = true;
       }
-    
+    //only for tabbuttons
+    public Button(int x, int y, String text, JPanel switchTo) {
+      super(text);
+      defaultSettings();
+      switchPanelAction = MainGUI.switchPanelAction(switchTo);
+      addActionListener(switchPanelAction);
+      setLocation(x, y);
+      setTab();
+      filled = true;
+      }
+
     public Button(int x, int y, String text, Color color, int w_new, int h_new) {
         super(text);
         defaultSettings(w_new, h_new);
@@ -74,7 +88,7 @@ public class Button extends JButton implements MouseListener {
       addMouseListener(this);
   }
 
-    private void setColor(Color color) {
+    public void setColor(Color color) {
         this.setBackground(color);
         this.color = color;
     }
@@ -92,6 +106,33 @@ public class Button extends JButton implements MouseListener {
     public Boolean getDark() {
       return this.dark;
     }
+    //for tab buttons, to make them the same colour as sidebar
+    public void setTab() {
+      if (getTab()) return;
+      setSize(130, 50);
+      setHorizontalAlignment(SwingConstants.LEADING);
+      setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+      //setFont(this.getFont().deriveFont(13f));
+      setFont(MasterGUI.poppinsFont);
+      setForeground(Color.WHITE);
+      setColor(MasterGUI.purple.darker());
+      setFocusPainted(false);
+      setContentAreaFilled(true);
+      setIconTextGap(15);
+      isTab = true;
+    }
+
+    public boolean getTab(){
+      return isTab;
+    }
+
+    public void setInactiveColor(Color color) {
+      inactiveColor = color;
+    }
+    public Color getInactiveColor(){
+      return inactiveColor;
+    }
+
     @Override
     public void mouseEntered(MouseEvent e) {
     //if (this.filled) {

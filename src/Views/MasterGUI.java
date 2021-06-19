@@ -10,11 +10,14 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.font.TextAttribute;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class MasterGUI extends JFrame{
     public static Font basicFont = new Font("Arial", Font.PLAIN, 15);
+    public static Font underline = new Font("Arial", Font.PLAIN, 15);
     public static Font basicFontFat = new Font("Arial", Font.BOLD, 15);
     public static Color black_gray = new Color(55,55,70);
     public static Color purple = new Color(128,131,201);
@@ -37,7 +40,6 @@ public class MasterGUI extends JFrame{
         panel.setBackground(new Color(255, 255, 255));
         panel.setLayout(null);
         add(panel);
-
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
           } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
