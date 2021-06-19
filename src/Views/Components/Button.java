@@ -135,9 +135,9 @@ public class Button extends JButton implements MouseListener {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-    //if (this.filled) {
-    //  this.setBackground(color.darker());
-    //}
+    if (this.filled) {
+      this.setBackground(color.darker());
+    }
     }
 
   
@@ -147,9 +147,9 @@ public class Button extends JButton implements MouseListener {
      */
     @Override
     public void mouseExited(MouseEvent e) {
-        //if (this.filled) {
-        // this.setBackground(color);
-        //}
+        if (this.filled) {
+         this.setBackground(color);
+        }
     }
 
     
@@ -159,7 +159,7 @@ public class Button extends JButton implements MouseListener {
      */
     @Override
     public void mousePressed(MouseEvent e) {
-    // this.setBackground(color);
+     this.setBackground(color);
     }
 
     
