@@ -2,11 +2,16 @@ package Views;
 import javax.swing.*;
 
 import Views.Components.Button;
-import Views.HomeViews.HomeView;
+import Views.Components.Label;
+import Views.HomeViews.*;
 import Views.*;
+import Views.Components.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,9 +27,9 @@ public class MainGUI extends MasterGUI{
     private static Button profileTab;
     private static Button inactiveTab;
     public static HomeView homePanel;
-    public static JPanel deckPanel;
-    public static JPanel searchPanel;
-    public static JPanel profilePanel;
+    public static DeckView deckPanel;
+    public static SearchView searchPanel;
+    public static ProfileView profilePanel;
 
     MainGUI(){
         frame = this;
@@ -33,15 +38,16 @@ public class MainGUI extends MasterGUI{
         remove(panel); // removes LoginGUI panel content as panel from mastergui still saved it
         
         tabPoint = new Point(0,0);
-        homePanel = new HomeView(frame);
-        deckPanel = new JPanel();
-        searchPanel = new JPanel();
-        profilePanel = new JPanel();
+        homePanel = new HomeView(frame);//user muss geaddet werden
+        deckPanel = new DeckView(frame);
+        searchPanel = new SearchView(frame);
+        profilePanel = new ProfileView(frame);
         currentPanel = homePanel;
         add(sidebar);
         add(homePanel);
         createSidebar();
         createSidebarTabs();
+        createLogoutTab();
         setComponentStyles(panel, "light");
         
         setLocationRelativeTo(null);
@@ -84,6 +90,87 @@ public class MainGUI extends MasterGUI{
          //you can customize font, inactive acitve
     }
 
+    private void createLogoutTab(){
+      logoutTab = new Button(tabPoint.x + 990, tabPoint.y, "         Logout", MasterGUI.purple);
+      logoutTab.setTab();
+      sidebar.add(logoutTab);
+
+      ActionListener logoutAction = new ActionListener() {
+        public void actionPerformed(ActionEvent actionEvent) {
+          dispose();
+          panel.removeAll();
+          new LoginGUI();
+        }
+      };
+
+      logoutTab.addActionListener(confirmDialogAction(logoutAction, "Do you really want to logout?"));
+    }
+    public static void confirmDialog(String prompt) {
+      confirmDialog(null, null, prompt);
+    }
+  
+    
+    public static void confirmDialog(ActionListener action, String prompt) {
+      confirmDialog(action, null, prompt);
+    }
+    public static void confirmDialog(ActionListener action, ActionListener failAction, String prompt) {
+      JDialog confirmDialog = new JDialog(frame, "Confirm action");
+      frame.setEnabled(false);
+  
+      /**
+       * Prevent app frame from staying disabled when user closes dialog
+       */
+      confirmDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+        public void windowClosing(WindowEvent e) {
+          frame.setEnabled(true);
+        }
+      });
+  
+      Label logoutlabel = new Label(30, 30, prompt, MasterGUI.purple);
+      Button yes = new Button(30, 60, "Yes", Color.BLUE);
+      Button no = new Button(140, 60, "No", Color.red);
+      no.setDark(false);
+  
+      JPanel logoutp = new JPanel();
+      logoutp.setLayout(null);
+      logoutp.setBackground(Color.green);
+      logoutp.add(logoutlabel);
+      if (action != null) {
+        logoutp.add(no);
+      } else {
+        yes.setLocation(85, 60);
+        yes.setText("OK");
+      }
+      logoutp.add(yes);
+  
+      confirmDialog.add(logoutp);
+      confirmDialog.setSize(300, 160);
+      confirmDialog.setResizable(false);
+      confirmDialog.setVisible(true);
+      confirmDialog.setLocationRelativeTo(null);
+  
+      setComponentStyles(logoutp, "light");
+  
+      ActionListener closeDialog = new ActionListener() {
+        public void actionPerformed(ActionEvent actionEvent) {
+          frame.setEnabled(true);
+          confirmDialog.dispose();
+        }
+      };
+      yes.addActionListener(action);
+      if (failAction != null)
+        no.addActionListener(failAction);
+      yes.addActionListener(closeDialog);
+      no.addActionListener(closeDialog);
+    }
+    public static ActionListener confirmDialogAction(ActionListener action, String prompt) {
+      return new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          confirmDialog(action, prompt);
+        }
+      };
+    }
+  
     public static void switchPanel(JPanel newPanel) {
         frame.remove(currentPanel);
         currentPanel = newPanel;
