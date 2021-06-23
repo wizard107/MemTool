@@ -1,8 +1,12 @@
 package Controller;
 
+import Model.Deck;
+import Model.User;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DatabaseAPI {
 
@@ -105,7 +109,7 @@ public class DatabaseAPI {
         if (key instanceof String)
             sqlColumn = "username";
         else
-            sqlColumn = "user_id";
+            sqlColumn = "id";
 
         String query = "SELECT * FROM User WHERE " + sqlColumn + " = ?";
         try{
@@ -132,21 +136,135 @@ public class DatabaseAPI {
         }
     }
 
-    public static void main(String[] args) {
+    /**
+     * Create table entry of a new user in database. Used for account creation.
+     *
+     * @param user - User object of new user
+     * @return <code>true</code> on successful user creation
+     */
+    public static boolean storeUser(User user) {
+        String sql = "INSERT INTO User(username, pw, email) VALUES(?,?,?)";
+        Connection connection = connectDatabase();
         try {
-            connectDatabase();
-            Statement statement = con.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM testtable");
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getEmail());
+            statement.executeUpdate();
 
-            while(resultSet.next()) {
-                System.out.println(resultSet.getString("firstname"));
+            statement.close();
+            closeDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase();
+            return false;
+        }
+        System.out.println("Stored new user");
+        return true;
+    }
+
+    public static User getUser(int key) {
+        Connection connection = connectDatabase();
+        ResultSet result = fetchUserData(connection, key);
+        if(result == null) {
+            closeDatabase();
+            return null;
+        }
+        try {
+            int id = result.getInt("id");
+            String username = result.getString("username");
+            String pw = result.getString("pw");
+            String email = result.getString("email");
+            ArrayList<Deck> decks = getDecksFromUser(id);
+
+            User user = new User(id, username, pw, email, decks);
+            closeDatabase();
+            System.out.println("User data fetched");
+            return user;
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            closeDatabase();
+            return null;
+        }
+    }
+
+    public static boolean editUser(User user) {
+        String update =  "UPDATE User SET username = ?, pw = ?, email = ? WHERE id = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(update);
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getEmail());
+            statement.setInt(4, user.getId());
+
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase();
+            return false;
+        }
+        System.out.println("User edited");
+        return true;
+    }
+
+    public static ArrayList<Deck> getDecksFromUser(int key) {
+        String query = "SELECT Deck.* FROM Deck LEFT JOIN UserDeck ON UserDeck.id = Deck.id WHERE UserDeck.userID = ?";
+        Connection connection = connectDatabase();
+        ArrayList<Deck> decks = new ArrayList<Deck>();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, key);
+            ResultSet result = statement.executeQuery();
+
+            while(result.next()) {
+                int id = result.getInt("id");
+                String deckname = result.getString("deckname");
+                int numberOfCards = result.getInt("numberofCards");
+                int due = result.getInt("due");
+                int newCards = result.getInt("new");
+                int again = result.getInt("again");
+                double rating = result.getDouble("rating");
+                //ArrayList<Card> cards = getCardsFromDeck(id);
+                //String[] tags = getTagsFromDeck(id);
+
+                //test
+                Deck deck = new Deck(id, deckname, null, null, numberOfCards, due,
+                        newCards, again, rating);
+                decks.add(deck);
             }
             statement.close();
             closeDatabase();
-
         } catch (SQLException e) {
             e.printStackTrace();
+            closeDatabase();
+            return null;
         }
+        System.out.println("Fetched all Decks from User with id: " + key);
+        return decks;
+    }
+
+
+    public static void main(String[] args) {
+
+        //storeUser(new User("elon", "msuk", "gmail"));
+        User test = getUser(1);
+        for(Deck d : test.getDecks()) {
+            System.out.println(d.getDeckName());
+        }
+        //System.out.println(test.getUsername());
+        //editUser(new User(2, "marl", "on", "gmail"));
+        //ArrayList<Deck> decks = getDecksFromUser(2);
+        //for(Deck d : decks ) {
+        //    System.out.println(d.getDeckName());
+        //}
+
+
         /*
         String path = System.getProperty("user.home") + File.separator + "Documents";
         path += File.separator + "Your Custom Folder";
