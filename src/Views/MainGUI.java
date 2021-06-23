@@ -43,13 +43,15 @@ public class MainGUI extends MasterGUI{
         searchPanel = new SearchView(frame);
         profilePanel = new ProfileView(frame);
         currentPanel = homePanel;
-        add(sidebar);
+        
         add(homePanel);
+        
         createSidebar();
         createSidebarTabs();
         createLogoutTab();
-        setComponentStyles(panel, "light");
         
+        setComponentStyles(panel, "light");
+        add(sidebar);
         setLocationRelativeTo(null);
         setVisible(true);
     }

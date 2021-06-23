@@ -11,7 +11,7 @@ public class Panel extends JPanel{
         this.setLayout(null);
       }
     public Panel(JFrame frame) {
-      this.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+      this.setBounds(0, +50, frame.getWidth(), frame.getHeight()-50);
       this.setBackground(new Color(255,250,250));
       this.setLayout(null);
       }  

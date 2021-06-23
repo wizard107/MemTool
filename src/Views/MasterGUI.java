@@ -21,6 +21,15 @@ public class MasterGUI extends JFrame{
     public static Font basicFontFat = new Font("Arial", Font.BOLD, 15);
     public static Color black_gray = new Color(55,55,70);
     public static Color purple = new Color(128,131,201);
+    public static Color babyblue = new Color(223,240,247); 
+    public static Color babyred = new Color(252,177,177); 
+    public static Color yellow = new Color(252,208,44);
+    public static Color white = new Color(240, 240, 245);
+    public static Color beige = new Color(245, 245, 245);
+    public static Color green = new Color(96, 165, 97);
+    public static Color red = new Color(227, 74, 100);
+    public static Color blue = new Color(66, 103, 178);
+    public static Color black = new Color(40,40,40);
     public static Font poppinsFont;
     public static Font poppinsFontBig;
     public static Font bodyFont;
@@ -68,6 +77,8 @@ public class MasterGUI extends JFrame{
             }
         });
       }
+
+
     public static void setComponentStyles(JPanel panel, String colorMode) {
         Color foreground;
         Color background;

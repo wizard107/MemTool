@@ -30,6 +30,13 @@ public class Label extends JLabel{
     setBounds(x, y, 250, 25);
     if(color!=null) setForeground(color);
   }
+  public Label(int x, int y, String text, Color color, float fontSize) {
+    super(text);
+    setFont(MasterGUI.poppinsFontBig.deriveFont(fontSize));
+    
+    setBounds(x, y, 250, 25);
+    if(color!=null) setForeground(color);
+  }
   public Label(String text, Component cmp) {
     super(text);
     setFont(MasterGUI.poppinsFont);
