@@ -33,15 +33,37 @@ public class User {
     /** icon or rather the avatar of user */
     //private ImageIcon avatar = MasterUI.avatarImage2;
 
+    /**
+     * Constructor to create a user after registration but before storing
+     * database
+     */
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.decks = new ArrayList<Deck>();
+        this.isAdmin = false;
+    }
+
+    /**
+     * Constructor after account creation and before storing to database
+     */
+    public User(int id, String username, String password, String email, ArrayList<Deck> decks) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.decks = decks;
+        this.isAdmin = false;
+    }
+
     public int getId() {
         return id;
     }
     public String getUsername() {
         return username;
     }
-    public String getFirstname() {
-        return firstname;
-    }
+    public String getFirstname() { return firstname; }
     public String getLastname() {
         return lastname;
     }
