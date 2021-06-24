@@ -19,7 +19,7 @@ public class Deck {
     public Deck() {}
 
     /**
-     * Constructor for fetching deck from database and creating model class from it
+     * Constructor for fetching deck data from database and creating model class from it
      */
     public Deck(int id, String deckName, ArrayList<Card> cards, String[] tags,
                 int numberOfCards, int due, int newCards, int again, double rating) {
@@ -27,6 +27,19 @@ public class Deck {
         this.deckName = deckName;
         this.cards = cards;
         this.tags = tags;
+        this.numberOfCards = numberOfCards;
+        this.due = due;
+        this.newCards = newCards;
+        this.again = again;
+        this.rating = rating;
+    }
+
+    /**
+     * Constructor for creating an deck object to store as table entry in table Deck
+     */
+    public Deck(int id, String deckName, int numberOfCards, int due, int newCards, int again, double rating) {
+        this.id = id;
+        this.deckName = deckName;
         this.numberOfCards = numberOfCards;
         this.due = due;
         this.newCards = newCards;

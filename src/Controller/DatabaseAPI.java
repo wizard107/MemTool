@@ -1,9 +1,13 @@
 package Controller;
 
+import Model.Card;
 import Model.Deck;
 import Model.User;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.ArrayList;
@@ -249,20 +253,248 @@ public class DatabaseAPI {
         return decks;
     }
 
+    /**
+     * Create a new entry in table Deck
+     *
+     * @param deck Deck object of new entry
+     * @return deckID on successful insertion, -1 on failed insertion
+     */
+    public static int storeDeck(Deck deck) {
+        String insert = "INSERT INTO Deck(deckname, numberOfCards, due , new, again, rating) VALUES(?,?,?,?,?,?)";
+        Connection connection = connectDatabase();
+        ResultSet result = null;
+        int deckID;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1,deck.getDeckName());
+            statement.setInt(2, deck.getNumberOfCards());
+            statement.setInt(3, deck.getDue());
+            statement.setInt(4, deck.getNewCards());
+            statement.setInt(5, deck.getAgain());
+            statement.setDouble(6, deck.getRating());
+            statement.executeUpdate();
+
+            result = statement.getGeneratedKeys();
+            if(result.next()) {
+                deckID = result.getInt(1);
+            } else {
+                throw new SQLException("Creating deck failed, no ID obtained.");
+            }
+            statement.close();
+            closeDatabase();
+            System.out.println("Stored new Deck");
+            return deckID;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase();
+            return -1;
+        }
+    }
+
+
+    /**
+     * Creates entry in table UserDeck since the relation between table User and table Deck
+     * is a many-to-many relation
+     * @param userID user id the corresponding user
+     * @param deckID deck id of corresponding deck
+     * @return true if insertion successful, false if insertion failed
+     */
+    public static boolean createUserDeckBridge(int userID, int deckID) {
+        String insert = "INSERT INTO UserDeck(userID, deckID) VALUES(?,?)";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(insert);
+            statement.setInt(1, userID);
+            statement.setInt(2, deckID);
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase();
+            return false;
+        }
+    }
+
+
+    /**
+     * Gets all cards of a deck through deckID
+     * @param deckID id of deck to which the cards belong to
+     * @return list of all cards of a deck
+     */
+    public static ArrayList<Card> getCardsFromDeck(int deckID) {
+        String query = "SELECT * FROM Card WHERE deckID = ?";
+        Connection connection = connectDatabase();
+        ResultSet result;
+        ArrayList<Card> cards = new ArrayList<Card>();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, deckID);
+            result = statement.executeQuery();
+            while(result.next()) {
+                int id = result.getInt("id");
+                String frontText = result.getString("front");
+                String backText = result.getString("back");
+                int dueTime = result.getInt("dueTime");
+                boolean wasForgotten = result.getBoolean("wasForgotten");
+
+                Card card = new Card(id, deckID, frontText, backText, dueTime, wasForgotten);
+                cards.add(card);
+            }
+            statement.close();
+            closeDatabase();
+            System.out.println("Fetched all Cards from Deck with id " + deckID);
+            return cards;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase();
+            return null;
+        }
+    }
+
+    /**
+     * Creates a new entry in table Card
+     *
+     * @param card Card object which data is to be stored in the database
+     * @return cardID on successful insertion, -1 on failed insertion
+     */
+    public static int storeCard(Card card) {
+        String insert = "INSERT INTO Card(deckID, front, back, dueTime, wasForgotten) VALUES(?,?,?,?,?)";
+        Connection connection = connectDatabase();
+        ResultSet result;
+        int cardID;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+            statement.setInt(1, card.getDeckID());
+            statement.setString(2, card.getFrontText());
+            statement.setString(3, card.getBackText());
+            statement.setDouble(4, card.getDueTime());
+            statement.setBoolean(5, card.getWasForgotten());
+            statement.executeUpdate();
+
+            result = statement.getGeneratedKeys();
+            if(result.next()) {
+                cardID = result.getInt(1);
+            } else {
+                throw new SQLException("Creating Card failed, no ID obtained.");
+            }
+            statement.close();
+            closeDatabase();
+            System.out.println("Stored new Card");
+            return cardID;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase();
+            return -1;
+        }
+    }
+
+    /**
+     * Updates table entry of a card if edited
+     * @param card to be edited
+     * @return true on successful update, false on failed update
+     */
+    public static boolean editCard(Card card) {
+        String update =  "UPDATE Card SET deckID = ?, front = ?, back = ?, dueTime = ?, wasForgotten = ? WHERE id = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(update);
+            statement.setInt(1, card.getDeckID());
+            statement.setString(2, card.getFrontText());
+            statement.setString(3, card.getBackText());
+            statement.setDouble(4, card.getDueTime());
+            statement.setBoolean(5, card.getWasForgotten());
+            statement.setInt(6, card.getId());
+
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase();
+            return false;
+        }
+        System.out.println("Card edited");
+        return true;
+    }
+
+    /**
+     * TODO
+     * @param cardID
+     * @return
+     */
+    public static ArrayList<File> getMediaFromCard(int cardID) {
+        String query = "SELECT * FROM Media WHERE cardID = ?";
+        Connection connection = connectDatabase();
+        ArrayList<File> files = new ArrayList<>();
+        InputStream input = null;
+        FileOutputStream output = null;
+
+        try{
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1 ,  cardID);
+
+            ResultSet result = statement.executeQuery();
+
+            while(result.next()){
+                File tempFile = new File(result.getString("filename"));
+                output = new FileOutputStream(tempFile);
+                input = result.getBinaryStream("file");
+
+                byte[] buffer = new byte[1024];
+                while (input.read(buffer) > 0){
+                    output.write(buffer);
+                }
+
+                files.add(tempFile);
+
+                input.close();
+                output.close();
+            }
+
+
+            return files;
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+
+            return null;
+        }
+
+    }
+
+
 
     public static void main(String[] args) {
 
         //storeUser(new User("elon", "msuk", "gmail"));
-        User test = getUser(1);
-        for(Deck d : test.getDecks()) {
-            System.out.println(d.getDeckName());
-        }
+//        User test = getUser(1);
+//        for(Deck d : test.getDecks()) {
+//            System.out.println(d.getDeckName());
+//        }
         //System.out.println(test.getUsername());
         //editUser(new User(2, "marl", "on", "gmail"));
         //ArrayList<Deck> decks = getDecksFromUser(2);
         //for(Deck d : decks ) {
         //    System.out.println(d.getDeckName());
         //}
+        //storeDeck(new Deck(5,"RTS", 35, 30,5,10,8));
+        //createUserDeckBridge(1,5);
+        //createUserDeckBridge(1,6);
+        //storeCard(new Card(2,"Kraftwerk der Zelle", "Mitochondrien", 5, false));
+        //storeCard(new Card(2, "Von DNA zum Protein", "Tanskription, mRNA-Prozessieurng, Translation", 3, true));
+        //storeCard(new Card(2, "Welche Struktur hat die DNA?", "Doppelhelixstruktur", 3, false));
+        //storeCard(new Card(3, "Spannung Einheit?", "Volt", 3, false));
+        //for(Card c : getCardsFromDeck(3)) {
+            //System.out.println(c.getFrontText());
+            //System.out.println(c.getBackText());
+        //}
+        editCard(new Card(5, 3, "Widerstand Einheit?", "Ohm", 10, true));
 
 
         /*
@@ -281,7 +513,6 @@ public class DatabaseAPI {
         Path file = new Path(path);
 
          */
-
     }
 
 
