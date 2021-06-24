@@ -22,7 +22,7 @@ public class MasterGUI extends JFrame{
     public static Color black_gray = new Color(55,55,70);
     public static Color purple = new Color(128,131,201);
     public static Color babyblue = new Color(223,240,247); 
-    public static Color babyred = new Color(252,177,177); 
+    public static Color babyred = new Color(255,203,199); 
     public static Color yellow = new Color(252,208,44);
     public static Color white = new Color(240, 240, 245);
     public static Color beige = new Color(245, 245, 245);
@@ -36,6 +36,7 @@ public class MasterGUI extends JFrame{
     private static File fileRoot = new File(System.getProperty("user.dir"));
     private static String imagesRoot = "/assets/images/";
     public static ImageIcon learnPNG = new ImageIcon(fileRoot + imagesRoot + "learn.png");
+    public static ImageIcon stopPNG = new ImageIcon(fileRoot + imagesRoot + "stop.png");
     protected static Panel panel = new Panel();
     public static void placeFieldLabel(Component comp, String name, JPanel panel) {
         Label label = new Label(comp.getX(), comp.getY() - 25, name, null);

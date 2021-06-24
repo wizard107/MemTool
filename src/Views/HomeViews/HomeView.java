@@ -40,7 +40,7 @@ public class HomeView extends Panel{
         drawDecks(deck,test, superPanel);
         scroller = makeScroller(superPanel);
         add(scroller);
-        
+        frame.repaint();
     }
     private JScrollPane makeScroller(Panel panel){
         scroller = new JScrollPane(panel);
@@ -83,6 +83,10 @@ public class HomeView extends Panel{
             learnBtn.addActionListener(e -> {
                 Panel learnMode = new LearnView(frame, deck);
                 MainGUI.switchPanel(learnMode);
+            });
+            viewBtn.addActionListener(e -> {
+                Panel viewMode = new CardView(frame, deck);
+                MainGUI.switchPanel(viewMode);
             });
             Panel icon = new Panel();
             icon.setBounds(point.x + 5, point.y + 10 + deckSpace, 45, 45);

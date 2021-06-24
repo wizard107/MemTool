@@ -175,8 +175,9 @@ public class MainGUI extends MasterGUI{
   
     public static void switchPanel(JPanel newPanel) {
         frame.remove(currentPanel);
+        frame.add(newPanel);
         currentPanel = newPanel;
-        frame.add(currentPanel);
+        
         frame.repaint();
       }
 
