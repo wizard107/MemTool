@@ -50,6 +50,7 @@ public class Button extends JButton implements MouseListener {
         setBackground(color);
         setDark(true);
         filled = true;
+        
       }    
 
 
