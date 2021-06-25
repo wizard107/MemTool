@@ -7,6 +7,7 @@ import Model.User;
 import java.io.*;
 import java.nio.file.Path;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -422,9 +423,11 @@ public class DatabaseAPI {
                 String frontText = result.getString("front");
                 String backText = result.getString("back");
                 int dueTime = result.getInt("dueTime");
+                LocalDate dueDate = result.getDate("dueDate").toLocalDate();
                 boolean wasForgotten = result.getBoolean("wasForgotten");
+                boolean isNew = result.getBoolean("isNew");
 
-                Card card = new Card(id, deckID, frontText, backText, dueTime, wasForgotten);
+                Card card = new Card(id, deckID, frontText, backText, dueTime, dueDate, wasForgotten, isNew);
                 cards.add(card);
             }
             statement.close();
@@ -590,7 +593,7 @@ public class DatabaseAPI {
      * @return cardID on successful insertion, -1 on failed insertion
      */
     public static int storeCard(Card card) {
-        String insert = "INSERT INTO Card(deckID, front, back, dueTime, wasForgotten) VALUES(?,?,?,?,?)";
+        String insert = "INSERT INTO Card(deckID, front, back, dueTime, dueDate, wasForgotten, isNew) VALUES(?,?,?,?,?,?,?)";
         Connection connection = connectDatabase();
         ResultSet result;
         int cardID;
@@ -600,8 +603,10 @@ public class DatabaseAPI {
             statement.setInt(1, card.getDeckID());
             statement.setString(2, card.getFrontText());
             statement.setString(3, card.getBackText());
-            statement.setDouble(4, card.getDueTime());
-            statement.setBoolean(5, card.getWasForgotten());
+            statement.setInt(4, card.getDueTime());
+            statement.setDate(5, Date.valueOf(card.getDueDate()));
+            statement.setBoolean(6, card.getWasForgotten());
+            statement.setBoolean(7, card.getIsNew());
             statement.executeUpdate();
 
             result = statement.getGeneratedKeys();
@@ -627,7 +632,7 @@ public class DatabaseAPI {
      * @return true on successful update, false on failed update
      */
     public static boolean editCard(Card card) {
-        String update =  "UPDATE Card SET deckID = ?, front = ?, back = ?, dueTime = ?, wasForgotten = ? WHERE id = ?";
+        String update =  "UPDATE Card SET deckID = ?, front = ?, back = ?, dueTime = ?, dueDate = ?, wasForgotten = ?, isNew = ? WHERE id = ?";
         Connection connection = connectDatabase();
 
         try {
@@ -635,9 +640,11 @@ public class DatabaseAPI {
             statement.setInt(1, card.getDeckID());
             statement.setString(2, card.getFrontText());
             statement.setString(3, card.getBackText());
-            statement.setDouble(4, card.getDueTime());
-            statement.setBoolean(5, card.getWasForgotten());
-            statement.setInt(6, card.getId());
+            statement.setInt(4, card.getDueTime());
+            statement.setDate(5, Date.valueOf(card.getDueDate()));
+            statement.setBoolean(6, card.getWasForgotten());
+            statement.setBoolean(7, card.getIsNew());
+            statement.setInt(8, card.getId());
 
             statement.executeUpdate();
             statement.close();

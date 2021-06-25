@@ -1,6 +1,7 @@
 package Model;
 
 import javax.swing.ImageIcon;
+import java.time.LocalDate;
 
 public class Card {
     private int id;
@@ -12,30 +13,36 @@ public class Card {
     private ImageIcon backImage;
     //audiofiles for back and front
      */
-    private double dueTime;
+    private int dueTime;
+    private LocalDate dueDate;
     private boolean wasForgotten;
+    private boolean isNew;
 
     /**
      * Constructor for creating card from users input
      */
-    public Card(int deckID, String frontText, String backText, double dueTime, boolean wasForgotten) {
+    public Card(int deckID, String frontText, String backText, int dueTime, LocalDate dueDate, boolean wasForgotten, boolean isNew) {
         this.deckID = deckID;
         this.frontText = frontText;
         this.backText = backText;
         this.dueTime = dueTime;
+        this.dueDate = dueDate;
         this.wasForgotten = wasForgotten;
+        this.isNew = isNew;
     }
 
     /**
      * Constructor for fetching card data from database and creating model class from it
      */
-    public Card(int id, int deckID, String frontText, String backText, double dueTime, boolean wasForgotten) {
+    public Card(int id, int deckID, String frontText, String backText, int dueTime, LocalDate dueDate, boolean wasForgotten, boolean isNew) {
         this.id = id;
         this.deckID = deckID;
         this.frontText = frontText;
         this.backText = backText;
         this.dueTime = dueTime;
+        this.dueDate = dueDate;
         this.wasForgotten = wasForgotten;
+        this.isNew = isNew;
     }
 
     public int getId() { return id; }
@@ -44,8 +51,10 @@ public class Card {
     public String getBackText() { return backText; }
     //public ImageIcon getFrontImage() { return frontImage; }
     //public ImageIcon getBackImage() { return backImage; }
-    public double getDueTime() { return dueTime; }
+    public int getDueTime() { return dueTime; }
+    public LocalDate getDueDate() { return dueDate;}
     public boolean getWasForgotten() { return wasForgotten; }
+    public boolean getIsNew() { return isNew; }
 
     public void setId(int id) { this.id = id; }
     public void setDeckID(int deckID) { this.deckID = deckID; }
@@ -53,6 +62,9 @@ public class Card {
     public void setBackText(String backText) { this.backText = backText; }
     //public void setFrontImage(ImageIcon frontImage) { this.frontImage = frontImage; }
     //public void setBackImage(ImageIcon backImage) { this.backImage = backImage; }
-    public void setDueTime(double dueTime) { this.dueTime = dueTime; }
+    public void setDueTime(int dueTime) { this.dueTime = dueTime; }
+    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate;};
     public void setWasForgotten(boolean wasForgotten) { this.wasForgotten = wasForgotten; }
+    public void setIsNew(boolean isNew) { this.isNew = isNew; }
+
 }
