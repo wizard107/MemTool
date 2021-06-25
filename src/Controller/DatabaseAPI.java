@@ -66,7 +66,7 @@ public class DatabaseAPI {
      * @return <code>true</code> if user exists
      * @throws SQLException in case of errors during queries.
      */
-    public static boolean verifyUser(String username, String password) {
+    public static boolean verifyUser(String username, String pw) {
         Connection connection = connectDatabase();
         ResultSet userData = fetchUserData(connection, username);
         if(userData == null) {
@@ -74,10 +74,10 @@ public class DatabaseAPI {
             return false;
         }
         try {
-            String saltHash = userData.getString("password");
-            String passwordEncrpyted = PasswordEncryption.verify(password, saltHash);
+            String saltHash = userData.getString("pw");
+            String passwordEncrpyted = PasswordEncryption.verify(pw, saltHash);
 
-            String sql = "SELECT * FROM User WHERE username = ? AND password = ?";
+            String sql = "SELECT * FROM User WHERE username = ? AND pw = ?";
 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, username);
@@ -92,6 +92,7 @@ public class DatabaseAPI {
             return isUser;
 
         } catch (SQLException e) {
+            System.out.println("verifyUser");
             e.printStackTrace();
         }
         return false;
@@ -132,6 +133,7 @@ public class DatabaseAPI {
             }
             return null;
         } catch (SQLException e) {
+            System.out.println("fetchUser");
             e.printStackTrace();
             System.out.println(e);
             return null;
@@ -165,7 +167,7 @@ public class DatabaseAPI {
         return true;
     }
 
-    public static User getUser(int key) {
+    public static <T> User getUser(T key) {
         Connection connection = connectDatabase();
         ResultSet result = fetchUserData(connection, key);
         if(result == null) {

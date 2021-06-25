@@ -1,6 +1,8 @@
 package Views;
 import javax.swing.*;
 
+import Controller.DatabaseAPI;
+import Model.User;
 import Views.Components.Button;
 import Views.Components.Label;
 import Views.Components.TextField;
@@ -8,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.awt.Point;
 import java.awt.Color;
 
@@ -48,7 +51,7 @@ public class LoginGUI extends MasterGUI{
       learnImage = new JLabel(learnPNG);
       learnImage.setBounds(250, -125, 700, 700);
       registerBtn = new Button(lgnBox.x, lgnBox.y + 230, "REGISTER",MasterGUI.purple,210,40);
-      success = new Label(lgnBox.x, lgnBox.y + 250, "", null);
+      success = new Label(lgnBox.x, lgnBox.y + 350, "", null);
       //backIconHero = new JLabel(loginHeroImage);
       screenTitle = new Label(lgnBox.x, lgnBox.y -50, "WELCOME BACK", 1, MasterGUI.purple);
       screenDescription = new Label(lgnBox.x -10, lgnBox.y -20, "Ready to learn something new today?",3, MasterGUI.purple);
@@ -70,13 +73,44 @@ public class LoginGUI extends MasterGUI{
       panel.add(screenDescription);
     }
 
-    public void loginBtnAction(){
+    /*public void loginBtnAction(){
       JFrame frame = this;
       loginBtn.addActionListener(new ActionListener(){
         public void actionPerformed(ActionEvent e){
         frame.dispose();
         frame.remove(panel); //removes LoginGUI screen, after that new MainGUI is started
         new MainGUI();
+        }
+      });
+    }*/
+    public void loginBtnAction() {
+      JFrame frame = this;
+      loginBtn.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String inputUser = userField.getText();
+          String inputPass = String.valueOf(passField.getPassword());
+  
+          if(inputUser.isEmpty() || inputPass.isEmpty()){
+            System.out.println("Either input empty..");
+            return;
+          }
+  
+          try {
+            if (DatabaseAPI.verifyUser(inputUser, inputPass)) {
+              frame.dispose();
+              frame.remove(panel);
+              User session = DatabaseAPI.getUser(inputUser);
+              new MainGUI(session);
+            } else {
+              success.setText("Wrong username or password");
+              passField.setText("");
+            }
+          /* catch (SQLException sqlException) {
+            sqlException.printStackTrace();*/
+          }catch(Exception sql){
+                System.out.println("LoginGUI"); 
+                sql.printStackTrace();
+          }
         }
       });
     }
