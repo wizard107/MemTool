@@ -62,7 +62,7 @@ public class DatabaseAPI {
      * Verify if given username and pass correspond to a user in the database.
      *
      * @param username - String of username
-     * @param password - String of <i>hashed<i> password
+     * @param pw - String of <i>hashed<i> password
      * @return <code>true</code> if user exists
      * @throws SQLException in case of errors during queries.
      */
@@ -216,6 +216,36 @@ public class DatabaseAPI {
         return true;
     }
 
+    /**
+     * Deletes user in the table User and user's corresponding entries
+     * table UserDeck since UserDeck contains userID as foreign key
+     * which ist set to delete on cascade
+     * @param userID Id of user to be deleted
+     * @return true on successful deletion, false on failed deletion
+     */
+    public static boolean deleteUser(int userID) {
+        String delete = "DELETE FROM User WHERE id = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            /*
+            ArrayList<Deck> decks = getDecksFromUser(userID);
+            for(Deck d : decks) {
+                deleteDeck(d.getId());
+            }*/
+            PreparedStatement statement = connection.prepareStatement(delete);
+            statement.setInt(1, userID);
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
+    }
+
     public static ArrayList<Deck> getDecksFromUser(int key) {
         String query = "SELECT Deck.* FROM Deck LEFT JOIN UserDeck ON UserDeck.id = Deck.id WHERE UserDeck.userID = ?";
         Connection connection = connectDatabase();
@@ -318,6 +348,31 @@ public class DatabaseAPI {
         }
         System.out.println("Deck edited");
         return true;
+    }
+
+    /**
+     * Delete deck in table Deck and in deck's corresponding entries
+     * in table Card, table UserDeck and table DeckTag
+     * @param deckID Id of deck to be deleted
+     * @return true on successful deletion, false on failed deletion
+     */
+    public static boolean deleteDeck(int deckID) {
+        String delete = "DELETE FROM Deck WHERE id = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(delete);
+            statement.setInt(1, deckID);
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+            System.out.println("Deck with id " + deckID + " deleted");
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
     }
 
     /**
@@ -477,6 +532,31 @@ public class DatabaseAPI {
     }
 
     /**
+     * Delete tag in table Tag and in deck's corresponding entries
+     * in table DeckTag
+     * @param tagID Id of deck to be deleted
+     * @return true on successful deletion, false on failed deletion
+     */
+    public static boolean deleteTag(int tagID) {
+        String delete = "DELETE FROM Tag WHERE id = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(delete);
+            statement.setInt(1, tagID);
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+            System.out.println("Tag with id " + tagID + " deleted");
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
+    }
+
+    /**
      * Creates entry in table DeckTag since the relation between table Deck and table tag
      * is a many-to-many relation
      * @param deckID deck id the corresponding user
@@ -572,6 +652,31 @@ public class DatabaseAPI {
     }
 
     /**
+     * Delete card in table Card and in card's corresponding entries
+     * in table Media
+     * @param cardID Id of deck to be deleted
+     * @return true on successful deletion, false on failed deletion
+     */
+    public static boolean deleteCard(int cardID) {
+        String delete = "DELETE FROM Card WHERE id = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(delete);
+            statement.setInt(1, cardID);
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+            System.out.println("Card with id " + cardID + " deleted");
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
+    }
+
+    /**
      * Gets the media files attached to a card out of the datatbase
      * @param cardID id of a card from which the attached files should be returned
      * @return list of files
@@ -661,6 +766,30 @@ public class DatabaseAPI {
         }
     }
 
+    /**
+     * Delete media/file in table Media
+     * @param mediaID Id of deck to be deleted
+     * @return true on successful deletion, false on failed deletion
+     */
+    public static boolean deleteMedia(int mediaID) {
+        String delete = "DELETE FROM Media WHERE id = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(delete);
+            statement.setInt(1, mediaID);
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+            System.out.println("media with id " + mediaID + " deleted");
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
+    }
+
     public static void main(String[] args) {
 
         //storeUser(new User("elon", "msuk", "gmail"));
@@ -695,6 +824,20 @@ public class DatabaseAPI {
         //createDeckTagBridge(3,2);
         //createDeckTagBridge(4,3);
 
+        //DELETE DECK TEST
+        //storeDeck(new Deck("Testdeck", 10, 10, 0, 0, 0));
+        //storeCard(new Card(7,"test", "back", 4, false));
+        //storeCard(new Card(7,"test", "back", 4, false));
+        //storeCard(new Card(7,"test", "back", 4, false));
+        //deleteDeck(7);
+
+        //DELETE CARD TEST
+        //storeCard(new Card(4,"test", "back", 4, false));
+        //storeMedia(new File("C:/Users/User/Desktop/Schule/bio/mutationen.jpg"), 9);
+        //deleteCard(9);
+
+
+        //getTags of deck TEST
         //ArrayList<Deck> decks = getDecksFromUser(1);
         //for(Deck d : decks) {
             //System.out.println(d.getDeckName() + ": ");

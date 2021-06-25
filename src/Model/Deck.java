@@ -38,8 +38,8 @@ public class Deck {
     /**
      * Constructor for creating an deck object to store as table entry in table Deck
      */
-    public Deck(int id, String deckName, int numberOfCards, int due, int newCards, int again, double rating) {
-        this.id = id;
+    public Deck(/*int id,*/ String deckName, int numberOfCards, int due, int newCards, int again, double rating) {
+        //this.id = id;
         this.deckName = deckName;
         this.numberOfCards = numberOfCards;
         this.due = due;
