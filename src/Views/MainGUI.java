@@ -42,7 +42,7 @@ public class MainGUI extends MasterGUI{
         remove(panel); // removes LoginGUI panel content as panel from mastergui still saved it
         
         tabPoint = new Point(0,0);
-        homePanel = new HomeView(frame);//user muss geaddet werden
+        homePanel = new HomeView(frame, user);//user muss geaddet werden
         deckPanel = new DeckView(frame);
         searchPanel = new SearchView(frame);
         profilePanel = new ProfileView(frame);
