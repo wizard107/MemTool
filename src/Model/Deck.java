@@ -87,4 +87,7 @@ public class Deck {
     public void setRating(double rating) {
         this.rating = rating;
     }
+    public int getSize(){
+        return cards.size();
+    }
 }

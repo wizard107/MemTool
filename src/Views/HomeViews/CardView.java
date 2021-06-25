@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.color.*;
+
+import Model.Card;
 import Model.Deck;
 import Views.MainGUI;
 import Views.MasterGUI;
@@ -38,20 +40,23 @@ public class CardView extends Panel{
     //private String[] answers = new String[15];
     private List<String> questions = new ArrayList<String>();
     private List<String> answers = new ArrayList<String>();
+    private ArrayList<Card> cards = new ArrayList<Card>();
     private Button save;
     TextPane questionPanelQA;
     TextPane answerPanelQA;
     private static JScrollPane scroller;
+
     public CardView(JFrame frame, Deck deck){
         super(frame);
         this.frame = frame;
         this.deck  = deck;
-        for(int i=0;i<10;i++){
+        cards = deck.getCards();
+        /*for(int i=0;i<10;i++){
             //questions[i] = "question" + String.valueOf(i);
             //answers[i] = "answer" + String.valueOf(i);
             questions.add(i,"question" + String.valueOf(i));
             answers.add(i,"question" + String.valueOf(i));
-        }
+        }*/
         superPanel = new Panel();
         superPanel.setPreferredSize(new Dimension(frame.getWidth()/2 + 70, frame.getHeight()*2+50));
         //superPanel.setBounds(0,0,frame.getWidth(), frame.getHeight());
@@ -124,7 +129,9 @@ public class CardView extends Panel{
         //subPanel.add(answerPanelQA);
         //superPanel.add(questionPanelQA);
         //superPanel.add(answerPanelQA);
-        for(int i = 0;i<questions.size();i++){
+        
+        for(int i = 0;i<cards.size();i++){
+            Card card = cards.get(i);
             Button edit = new Button(point2.x+505, point2.y-40 + cardSpace,"EDIT", MasterGUI.purple,80,25);   //später counter für actionlistener, der immer um eins hochgeht, jeder edit übernimmt dann die kontrolle für deck[count++]
             createCardViewBtn(edit);
             switchQA(edit, i);
@@ -133,11 +140,11 @@ public class CardView extends Panel{
             deleteQA(delete, i);
             idPanel = new Panel();
             idPanel.setBounds(point2.x-40, point2.y-40+ cardSpace, 385,25);
-            idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, " IDT", MasterGUI.black,15f);
+            idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, String.valueOf(card.getId()), MasterGUI.black,15f);
             createCardViewLabel(idlabel,35, 25);
-            namelabel = new Label(point2.x-5, point2.y-40+ cardSpace, " NAMET", MasterGUI.black,15f);
+            namelabel = new Label(point2.x-5, point2.y-40+ cardSpace, card.getFrontText(), MasterGUI.black,15f);
             createCardViewLabel(namelabel, 250, 25);
-            duelabel = new Label(point2.x+245, point2.y-40+ cardSpace, " DUEDATET", MasterGUI.black,15f);
+            duelabel = new Label(point2.x+245, point2.y-40+ cardSpace, String.valueOf(card.getDueTime()), MasterGUI.black,15f);
             createCardViewLabel(duelabel,100, 25);
             idPanel.setBorder(BorderFactory.createLineBorder(Color.black));
             //superPanel.add(save);
@@ -169,18 +176,23 @@ public class CardView extends Panel{
                 answerPanelQA.removeAll();
                 questionPanelQA.setText("New Card Added");
                 answerPanelQA.setText("New Card Added");
-                deckSize++;
-                currentID = deckSize;
-                questions.add(deckSize, "");
-                answers.add(deckSize, "");
+                //deckSize++;
+                //currentID = deckSize;
+                Card addCard = new Card(deck.getId(), "New Card Added", "New Card Added", 1, false);
+                cards.add(addCard);
+                deck.setCardDeck(cards);
+                //questions.add(deckSize, "");
+                //answers.add(deckSize, "");
                 Panel idPanel = new Panel();
                 idPanel.setBounds(point2.x-40, point2.y-40+ cardSpace, 385,25);
                 idPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-                Label idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, " IDT", MasterGUI.black,15f);
+                Card newCard = cards.get(cards.size()-1);
+                //Label idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, "ID", MasterGUI.black,15f);
+                Label idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, String.valueOf(cards.size()), MasterGUI.black,15f);
                 createCardViewLabel(idlabel,35, 25);
-                Label namelabel = new Label(point2.x-5, point2.y-40+ cardSpace, " NAMET", MasterGUI.black,15f);
+                Label namelabel = new Label(point2.x-5, point2.y-40+ cardSpace, newCard.getFrontText(), MasterGUI.black,15f);
                 createCardViewLabel(namelabel,250, 25);
-                Label duelabel = new Label(point2.x+245, point2.y-40+ cardSpace, " DUEDATET", MasterGUI.black,15f);
+                Label duelabel = new Label(point2.x+245, point2.y-40+ cardSpace, String.valueOf(newCard.getDueTime()), MasterGUI.black,15f);
                 createCardViewLabel(duelabel,100, 25);
                 
                 superPanel.add(idlabel);
@@ -191,8 +203,8 @@ public class CardView extends Panel{
                 createCardViewBtn(edit);
                 Button delete = new Button(point2.x+400, point2.y-40 + cardSpace,"DELETE", MasterGUI.red,80,25);   
                 createCardViewBtn(delete);
-                deleteQA(delete, deckSize);
-                switchQA(edit, deckSize);
+                deleteQA(delete, cards.size()-1);
+                switchQA(edit, cards.size()-1);
                 superPanel.add(edit);
                 superPanel.add(delete);
                 superPanel.repaint();
@@ -207,11 +219,13 @@ public class CardView extends Panel{
             public void actionPerformed(ActionEvent e){
                 questionPanelQA.removeAll();
                 answerPanelQA.removeAll();
-                questions.remove(i);
-                answers.remove(i);
+                cards.remove(i);
+                //questions.remove(i);
+                //answers.remove(i);
                 superPanel.removeAll();
                 cardSpace = 35;
-                deckSize--;
+                deck.setCardDeck(cards);
+                //deckSize--;
                 currentID = -1;
                 drawLeftSide();
                 superPanel.repaint();
@@ -223,10 +237,11 @@ public class CardView extends Panel{
     private void switchQA(Button editBtn, int i){
         ActionListener change = new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                Card card = cards.get(i);
                 questionPanelQA.removeAll();
                 answerPanelQA.removeAll();
-                questionPanelQA.setText(questions.get(i));
-                answerPanelQA.setText(answers.get(i));
+                questionPanelQA.setText(card.getFrontText());
+                answerPanelQA.setText(card.getBackText());
                 currentID = i;
                 System.out.println("Edit"); 
             }
@@ -238,8 +253,10 @@ public class CardView extends Panel{
             public void actionPerformed(ActionEvent e){
                 if(currentID==-1) System.out.println("Not Saved");
                 else{
-                    questions.set(currentID, questionPanelQA.getText()); //<---set
-                    answers.set(currentID, answerPanelQA.getText());
+                    cards.get(currentID).setFrontText(questionPanelQA.getText());
+                    cards.get(currentID).setBackText(answerPanelQA.getText());
+                    //questions.set(currentID, questionPanelQA.getText()); //<---set
+                    //answers.set(currentID, answerPanelQA.getText());
                     //answers[currentID] = answerPanelQA.getText();    
                     System.out.println("Saved");          
                 }
