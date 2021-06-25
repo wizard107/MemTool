@@ -1,12 +1,13 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Deck {
     private int id;
     private String deckName;
     private ArrayList<Card> cards;
-    private String[] tags;
+    private Map<Integer, String> tags;
     private int numberOfCards;
     private int due;
     private int newCards;
@@ -21,7 +22,7 @@ public class Deck {
     /**
      * Constructor for fetching deck data from database and creating model class from it
      */
-    public Deck(int id, String deckName, ArrayList<Card> cards, String[] tags,
+    public Deck(int id, String deckName, ArrayList<Card> cards, Map<Integer, String> tags,
                 int numberOfCards, int due, int newCards, int again, double rating) {
         this.id = id;
         this.deckName = deckName;
@@ -56,7 +57,7 @@ public class Deck {
     public ArrayList<Card> getCards() {
         return cards;
     }
-    public String[] getTags() {
+    public Map<Integer, String> getTags() {
         return tags;
     }
     public int getNumberOfCards() { return numberOfCards;}
@@ -76,7 +77,7 @@ public class Deck {
     public void setCardDeck(ArrayList<Card> cards) {
         this.cards = cards;
     }
-    public void setTags(String[] tags) {
+    public void setTags(Map<Integer, String> tags) {
         this.tags = tags;
     }
     public void setNumberOfCards(int numberOfCards) { this.numberOfCards = numberOfCards;}

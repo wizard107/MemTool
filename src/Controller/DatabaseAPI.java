@@ -4,13 +4,13 @@ import Model.Card;
 import Model.Deck;
 import Model.User;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DatabaseAPI {
 
@@ -28,16 +28,14 @@ public class DatabaseAPI {
 
     /**
      * Build a connection to the application database.
-     * If a connection already resides, that connection is used instead.
      *
      * @return <code>null</code> on failed connection, else return connection object
      */
     private static Connection connectDatabase() {
         try {
-            if(con != null)
-                return con;
-            con = DriverManager.getConnection(SQL_URI, SQL_USERNAME, SQL_PASSWORD);
-            return con;
+            Connection connect;
+            connect = DriverManager.getConnection(SQL_URI, SQL_USERNAME, SQL_PASSWORD);
+            return connect;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -49,11 +47,11 @@ public class DatabaseAPI {
      * after every other database API function, as multiple unused connection may
      * reach cloud traffic limit.
      */
-    public static void closeDatabase() {
+    public static void closeDatabase(Connection connect) {
         try {
-            if (con != null) {
-                con.close();
-                con = null;
+            if (connect != null) {
+                connect.close();
+                connect = null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -157,10 +155,10 @@ public class DatabaseAPI {
             statement.executeUpdate();
 
             statement.close();
-            closeDatabase();
+            closeDatabase(connection);
         } catch (SQLException e) {
             e.printStackTrace();
-            closeDatabase();
+            closeDatabase(connection);
             return false;
         }
         System.out.println("Stored new user");
@@ -171,7 +169,7 @@ public class DatabaseAPI {
         Connection connection = connectDatabase();
         ResultSet result = fetchUserData(connection, key);
         if(result == null) {
-            closeDatabase();
+            closeDatabase(connection);
             return null;
         }
         try {
@@ -182,13 +180,13 @@ public class DatabaseAPI {
             ArrayList<Deck> decks = getDecksFromUser(id);
 
             User user = new User(id, username, pw, email, decks);
-            closeDatabase();
+            closeDatabase(connection);
             System.out.println("User data fetched");
             return user;
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-            closeDatabase();
+            closeDatabase(connection);
             return null;
         }
     }
@@ -206,10 +204,10 @@ public class DatabaseAPI {
 
             statement.executeUpdate();
             statement.close();
-            closeDatabase();
+            closeDatabase(connection);
         } catch (SQLException e) {
             e.printStackTrace();
-            closeDatabase();
+            closeDatabase(connection);
             return false;
         }
         System.out.println("User edited");
@@ -227,26 +225,28 @@ public class DatabaseAPI {
             ResultSet result = statement.executeQuery();
 
             while(result.next()) {
-                int id = result.getInt("id");
+                int deckID = result.getInt("id");
                 String deckname = result.getString("deckname");
                 int numberOfCards = result.getInt("numberofCards");
                 int due = result.getInt("due");
                 int newCards = result.getInt("new");
                 int again = result.getInt("again");
                 double rating = result.getDouble("rating");
-                //ArrayList<Card> cards = getCardsFromDeck(id);
-                //String[] tags = getTagsFromDeck(id);
+                ArrayList<Card> cards = getCardsFromDeck(deckID);
+                Map<Integer, String> tags = getTagsFromDeck(deckID);
 
                 //test
-                Deck deck = new Deck(id, deckname, null, null, numberOfCards, due,
+                Deck deck = new Deck(deckID, deckname, cards, tags, numberOfCards, due,
                         newCards, again, rating);
                 decks.add(deck);
             }
-            statement.close();
-            closeDatabase();
+            if(!connection.isClosed()) {
+                statement.close();
+                closeDatabase(connection);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            closeDatabase();
+            closeDatabase(connection);
             return null;
         }
         System.out.println("Fetched all Decks from User with id: " + key);
@@ -282,16 +282,41 @@ public class DatabaseAPI {
                 throw new SQLException("Creating deck failed, no ID obtained.");
             }
             statement.close();
-            closeDatabase();
+            closeDatabase(connection);
             System.out.println("Stored new Deck");
             return deckID;
         } catch (SQLException e) {
             e.printStackTrace();
-            closeDatabase();
+            closeDatabase(connection);
             return -1;
         }
     }
 
+    public static boolean editDeck(Deck deck) {
+        String update =  "UPDATE Deck SET deckname = ?, numberOfCards = ?, due = ?, new = ?, again = ?, rating = ? WHERE id = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(update);
+            statement.setString(1, deck.getDeckName());
+            statement.setInt(2, deck.getNumberOfCards());
+            statement.setInt(3, deck.getDue());
+            statement.setInt(4, deck.getNewCards());
+            statement.setInt(5, deck.getAgain());
+            statement.setDouble(6, deck.getRating());
+            statement.setInt(6, deck.getId());
+
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
+        System.out.println("Deck edited");
+        return true;
+    }
 
     /**
      * Creates entry in table UserDeck since the relation between table User and table Deck
@@ -310,11 +335,11 @@ public class DatabaseAPI {
             statement.setInt(2, deckID);
             statement.executeUpdate();
             statement.close();
-            closeDatabase();
+            closeDatabase(connection);
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            closeDatabase();
+            closeDatabase(connection);
             return false;
         }
     }
@@ -346,15 +371,135 @@ public class DatabaseAPI {
                 cards.add(card);
             }
             statement.close();
-            closeDatabase();
+            closeDatabase(connection);
             System.out.println("Fetched all Cards from Deck with id " + deckID);
             return cards;
         } catch (SQLException e) {
             e.printStackTrace();
-            closeDatabase();
+            closeDatabase(connection);
             return null;
         }
     }
+
+    /**
+     * Get all related tags/topics from a deck
+     * @param deckID
+     * @return list of tags as strings
+     */
+    public static Map<Integer,String> getTagsFromDeck(int deckID) {
+        String query = "SELECT Tag.* FROM Tag LEFT JOIN DeckTag ON DeckTag.tagID = Tag.id WHERE DeckTag.deckID = ?";
+        Connection connection = connectDatabase();
+        Map<Integer, String>  tags = new HashMap<Integer, String>();
+        //ArrayList<String> tags = new ArrayList<String>();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, deckID);
+            ResultSet result = statement.executeQuery();
+
+            while(result.next()) {
+                int tagID = result.getInt("id");
+                String tag = result.getString("topic");
+                tags.put(tagID, tag);
+            }
+            statement.close();
+            closeDatabase(connection);
+            System.out.println("Fetched all Tags from Deck with id: " + deckID);
+            return tags;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return null;
+        }
+    }
+
+    /**
+     * Creates a new entry in table Tag
+     *
+     * @param tag to the deck related tag as string to be stored
+     * @return tagID on successful insertion, -1 on failed insertion
+     */
+    public static int storeTag(String tag) {
+        String insert = "INSERT INTO Tag(topic) VALUES(?)";
+        Connection connection = connectDatabase();
+        ResultSet result;
+        int tagID;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, tag);
+            statement.executeUpdate();
+
+            result = statement.getGeneratedKeys();
+            if(result.next()) {
+                tagID = result.getInt(1);
+            } else {
+                throw new SQLException("Creating Tag failed, no ID obtained.");
+            }
+            statement.close();
+            closeDatabase(connection);
+            System.out.println("Stored new tag");
+            return tagID;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return -1;
+        }
+    }
+
+    /**
+     * Edits a tag
+     * @param topic new topic
+     * @param tagID id of tag to be edited
+     * @return true if edit was successful, false on failed update
+     */
+    public static boolean editTag(String topic, int tagID) {
+        String update =  "UPDATE Tag SET topic = ? WHERE id = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(update);
+            statement.setString(1, topic);
+            statement.setInt(2, tagID);
+
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
+        System.out.println("Tag edited");
+        return true;
+    }
+
+    /**
+     * Creates entry in table DeckTag since the relation between table Deck and table tag
+     * is a many-to-many relation
+     * @param deckID deck id the corresponding user
+     * @param tagID tag id of corresponding deck
+     * @return true if insertion successful, false if insertion failed
+     */
+    public static boolean createDeckTagBridge(int deckID, int tagID) {
+        String insert = "INSERT INTO DeckTag(deckID, tagID) VALUES(?,?)";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(insert);
+            statement.setInt(1, deckID);
+            statement.setInt(2, tagID);
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
+    }
+
 
     /**
      * Creates a new entry in table Card
@@ -384,12 +529,12 @@ public class DatabaseAPI {
                 throw new SQLException("Creating Card failed, no ID obtained.");
             }
             statement.close();
-            closeDatabase();
+            closeDatabase(connection);
             System.out.println("Stored new Card");
             return cardID;
         } catch (SQLException e) {
             e.printStackTrace();
-            closeDatabase();
+            closeDatabase(connection);
             return -1;
         }
     }
@@ -414,10 +559,10 @@ public class DatabaseAPI {
 
             statement.executeUpdate();
             statement.close();
-            closeDatabase();
+            closeDatabase(connection);
         } catch (SQLException e) {
             e.printStackTrace();
-            closeDatabase();
+            closeDatabase(connection);
             return false;
         }
         System.out.println("Card edited");
@@ -425,9 +570,9 @@ public class DatabaseAPI {
     }
 
     /**
-     * TODO
-     * @param cardID
-     * @return
+     * Gets the media files attached to a card out of the datatbase
+     * @param cardID id of a card from which the attached files should be returned
+     * @return list of files
      */
     public static ArrayList<File> getMediaFromCard(int cardID) {
         String query = "SELECT * FROM Media WHERE cardID = ?";
@@ -457,18 +602,62 @@ public class DatabaseAPI {
                 input.close();
                 output.close();
             }
-
-
+            statement.close();
+            closeDatabase(connection);
             return files;
         } catch (SQLException | IOException e) {
             e.printStackTrace();
-
+            closeDatabase(connection);
             return null;
         }
 
     }
 
 
+    /**
+     * Adds attachment entry into the Database.
+     *
+     * @param file File to be uploaded into the database
+     * @param cardID Id of card to which the file belongs to
+     * @return -1 on failed creation, ID on successful creation
+     */
+    public static int storeMedia(File file, int cardID) {
+        String sql = "INSERT INTO Media(cardID, file, filename, filepath) VALUES (?,?,?,?)";
+        Connection connection = connectDatabase();
+        int attachmentId = -1;
+        try{
+            PreparedStatement statement = connection.prepareStatement(sql , Statement.RETURN_GENERATED_KEYS);
+            FileInputStream input = new FileInputStream(file);
+            statement.setInt(1 , cardID);
+            statement.setBinaryStream(2 , input);
+            statement.setString(3, file.getName());
+            statement.setString(4, file.getPath());
+
+            statement.executeUpdate();
+            ResultSet generatedKey = statement.getGeneratedKeys();
+
+            if (generatedKey.next()) {
+                attachmentId = generatedKey.getInt(1);
+            } else {
+                throw new SQLException("Creating media file failed, no ID obtained.");
+            }
+
+            input.close();
+            statement.close();
+            closeDatabase(connection);
+            System.out.println("Media file stored.");
+            return attachmentId;
+
+        } catch (SQLException e){
+            e.printStackTrace();
+            closeDatabase(connection);
+            return attachmentId;
+        } catch (IOException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return attachmentId;
+        }
+    }
 
     public static void main(String[] args) {
 
@@ -494,8 +683,30 @@ public class DatabaseAPI {
             //System.out.println(c.getFrontText());
             //System.out.println(c.getBackText());
         //}
-        editCard(new Card(5, 3, "Widerstand Einheit?", "Ohm", 10, true));
+        //editCard(new Card(5, 3, "Widerstand Einheit?", "Ohm", 10, true));
+        //storeTag("Biologie");
+        //storeTag("Abitur");
+        //storeTag("Studium");
+        //createDeckTagBridge(1,3);
+        //createDeckTagBridge(2,1);
+        //createDeckTagBridge(2,2);
+        //createDeckTagBridge(3,2);
+        //createDeckTagBridge(4,3);
 
+        //ArrayList<Deck> decks = getDecksFromUser(1);
+        //for(Deck d : decks) {
+            //System.out.println(d.getDeckName() + ": ");
+            //Map<Integer, String> map = d.getTags();
+            //for(String s : map.values()) {
+                //System.out.println(s);
+            //}
+        //}
+
+        //File example = new File("C:/Users/User/Desktop/Schule/bio/mutationen.jpg");
+        //storeMedia(example, 3);
+        //ArrayList<File> files = getMediaFromCard(3);
+        //for(File f : files )
+            //System.out.println(f.getAbsolutePath());
 
         /*
         String path = System.getProperty("user.home") + File.separator + "Documents";
