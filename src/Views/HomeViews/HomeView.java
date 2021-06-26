@@ -26,8 +26,8 @@ public class HomeView extends Panel{
     private static Panel superPanel;
     private static JPanel subPanel;
     private static JScrollPane scroller;
-    private ArrayList<Deck> decks;
-    private User user;
+    private static ArrayList<Deck> decks;
+    private static User user;
     public HomeView(JFrame frame, User user){
         super(frame);
         this.user = user;
@@ -59,8 +59,16 @@ public class HomeView extends Panel{
 
         return scroller;
     }
+    public static void repaintHomeView(){
+        superPanel.removeAll();
+        
+        decks = user.getDecks();
+        drawDecks(superPanel);
+        //scroller = makeScroller(superPanel);
+        frame.repaint();
+    }
 
-    private void drawDecks(Panel panel){
+    private static void drawDecks(Panel panel){
         Point point = new Point(250 , 50);
         int deckSpace = 0;
         for(Deck deck: decks){
@@ -93,8 +101,13 @@ public class HomeView extends Panel{
             learnBtn.setForeground(MasterGUI.black);
             learnBtn.setFocusPainted(false);
             learnBtn.addActionListener(e -> {
+                try{
                 Panel learnMode = new LearnView(frame, deck,user);
                 MainGUI.switchPanel(learnMode);
+                }catch(NullPointerException np){
+                    System.out.println("No Cards Left to Learn");
+                }
+                
             });
             viewBtn.addActionListener(e -> {
                 Panel viewMode = new CardView(frame, deck,user);
