@@ -14,6 +14,7 @@ public class Card {
     private ImageIcon backImage;
     //audiofiles for back and front
      */
+    private int cardPosition;
     private int dueTime;
     private LocalDate dueDate;
     private boolean wasForgotten;
@@ -59,7 +60,12 @@ public class Card {
     public LocalDate getDueDate() { return dueDate;}
     public boolean getWasForgotten() { return wasForgotten; }
     public boolean getIsNew() { return isNew; }
-
+    public int getCardPosition(){
+        return cardPosition;
+    }
+    public void setCardPosition(int i){
+        cardPosition = i;
+    }
     public void setId(int id) { this.id = id; }
     public void setDeckID(int deckID) { this.deckID = deckID; }
     public void setFrontText(String frontText) { this.frontText = frontText; }

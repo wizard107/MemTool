@@ -26,11 +26,12 @@ public class HomeView extends Panel{
     private static Panel superPanel;
     private static JPanel subPanel;
     private static JScrollPane scroller;
-    private List<Deck> decks;
+    private ArrayList<Deck> decks;
     private User user;
     public HomeView(JFrame frame, User user){
         super(frame);
         this.user = user;
+        //this.decks = user.getDecks();
         this.decks = user.getDecks();
         HomeView.frame = frame;
         superPanel = new Panel();
@@ -71,9 +72,9 @@ public class HomeView extends Panel{
             Label due = new Label(point.x + 530, point.y +22 + deckSpace, "DUE", MasterGUI.green, 20f);
             Label failed = new Label(point.x + 575, point.y +22 + deckSpace, "FAILED", MasterGUI.red, 20f);
             Label neu = new Label(point.x + 640, point.y +22 + deckSpace, "NEW", MasterGUI.blue, 20f);
-            Label due0 = new Label(point.x + 530, point.y +45 + deckSpace, String.valueOf(deck.getDue()), MasterGUI.green, 20f);
-            Label failed0 = new Label(point.x + 575, point.y +45 + deckSpace, String.valueOf(deck.getAgain()), MasterGUI.red, 20f);
-            Label neu0 = new Label(point.x + 640, point.y +45 + deckSpace, String.valueOf(deck.getNewCards()), MasterGUI.blue, 20f);
+            Label due0 = new Label(point.x + 530, point.y +45 + deckSpace, String.valueOf(deck.calcDue()), MasterGUI.green, 20f);
+            Label failed0 = new Label(point.x + 575, point.y +45 + deckSpace, String.valueOf(deck.calcAgain()), MasterGUI.red, 20f);
+            Label neu0 = new Label(point.x + 640, point.y +45 + deckSpace, String.valueOf(deck.calcNew()),MasterGUI.blue, 20f);
             //Map<Integer,String> deckTags  = deck.getTags();
             List<String> deckTags = new ArrayList<>(deck.getTags().values());
             int i=0;
@@ -92,11 +93,11 @@ public class HomeView extends Panel{
             learnBtn.setForeground(MasterGUI.black);
             learnBtn.setFocusPainted(false);
             learnBtn.addActionListener(e -> {
-                Panel learnMode = new LearnView(frame, deck);
+                Panel learnMode = new LearnView(frame, deck,user);
                 MainGUI.switchPanel(learnMode);
             });
             viewBtn.addActionListener(e -> {
-                Panel viewMode = new CardView(frame, deck);
+                Panel viewMode = new CardView(frame, deck,user);
                 MainGUI.switchPanel(viewMode);
             });
             Panel icon = new Panel();
@@ -118,59 +119,5 @@ public class HomeView extends Panel{
         }
     }
 
-    /*private void drawDecks(Deck[] decks,String[] hashtag, Panel panel){
-        Point point = new Point(250 , 50);
-        int deckSpace = 0;
-        for(Deck deck: decks){
-            Panel card = new Panel();
-            card.setBounds(point.x, point.y + deckSpace, 925, 100);
-            card.setBackground(MasterGUI.white);
-            card.setBorder(BorderFactory.createLineBorder(Color.black));
-            Label title = new Label(point.x + 60, point.y +8 + deckSpace, "TITLE", MasterGUI.black, 24f);
-            Label due = new Label(point.x + 530, point.y +22 + deckSpace, "DUE", MasterGUI.green, 20f);
-            Label failed = new Label(point.x + 575, point.y +22 + deckSpace, "AGAIN", MasterGUI.red, 20f);
-            Label neu = new Label(point.x + 640, point.y +22 + deckSpace, "NEW", MasterGUI.blue, 20f);
-            Label due0 = new Label(point.x + 530, point.y +45 + deckSpace, "0", MasterGUI.green, 20f);
-            Label failed0 = new Label(point.x + 575, point.y +45 + deckSpace, "0", MasterGUI.red, 20f);
-            Label neu0 = new Label(point.x + 640, point.y +45 + deckSpace, "0", MasterGUI.blue, 20f);
-            for(int i=0;i<hashtag.length;i++){
-                Label tag = new Label(point.x + 60 + i*125, point.y + 70 + deckSpace, hashtag[i], MasterGUI.black, 22f);
-                panel.add(tag);
-            }
-            Button viewBtn = new Button(point.x + 700, point.y + 25 + deckSpace, "VIEW", MasterGUI.yellow, 110, 40);
-            viewBtn.setFont(MasterGUI.poppinsFontBig);
-            viewBtn.setForeground(MasterGUI.black);
-            viewBtn.setContentAreaFilled(true);
-            viewBtn.setFocusPainted(false);
-            Button learnBtn = new Button(point.x + 810, point.y + 25 + deckSpace, "LEARN", MasterGUI.purple, 110, 40);
-            learnBtn.setFont(MasterGUI.poppinsFontBig);
-            learnBtn.setContentAreaFilled(true);
-            learnBtn.setForeground(MasterGUI.black);
-            learnBtn.setFocusPainted(false);
-            learnBtn.addActionListener(e -> {
-                Panel learnMode = new LearnView(frame, deck);
-                MainGUI.switchPanel(learnMode);
-            });
-            viewBtn.addActionListener(e -> {
-                Panel viewMode = new CardView(frame, deck);
-                MainGUI.switchPanel(viewMode);
-            });
-            Panel icon = new Panel();
-            icon.setBounds(point.x + 5, point.y + 10 + deckSpace, 45, 45);
-            icon.setBackground(MasterGUI.purple);
-            panel.add(icon);
-            panel.add(title);
-            panel.add(viewBtn);
-            panel.add(learnBtn);
-            panel.add(due);
-            panel.add(neu);
-            panel.add(failed);
-            panel.add(due0);
-            panel.add(failed0);
-            panel.add(neu0);
-
-            panel.add(card);
-            deckSpace += 120;
-        }
-    }*/
+    
 }
