@@ -43,7 +43,7 @@ public class MainGUI extends MasterGUI{
         
         tabPoint = new Point(0,0);
         homePanel = new HomeView(frame, user);//user muss geaddet werden
-        deckPanel = new DeckView(frame);
+        deckPanel = new DeckView(frame, user);
         searchPanel = new SearchView(frame);
         profilePanel = new ProfileView(frame);
         currentPanel = homePanel;
