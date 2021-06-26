@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.color.*;
@@ -178,7 +179,8 @@ public class CardView extends Panel{
                 answerPanelQA.setText("New Card Added");
                 //deckSize++;
                 //currentID = deckSize;
-                Card addCard = new Card(deck.getId(), "New Card Added", "New Card Added", 1, false);
+                LocalDate dueDate = LocalDate.now();
+                Card addCard = new Card(deck.getId(), "New Card Added", "New Card Added",0, 1, dueDate , false, false);
                 cards.add(addCard);
                 deck.setCardDeck(cards);
                 //questions.add(deckSize, "");
