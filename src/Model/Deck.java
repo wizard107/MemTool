@@ -68,6 +68,7 @@ public class Deck {
         int countDue = 0;
         for(Card card: cards){
             if((card.getDueDate().equals(LocalDate.now())||(card.getDueDate().isBefore(LocalDate.now())))) countDue++;
+            //&!=isnew !=isforgotten
         }
         return countDue;
     }

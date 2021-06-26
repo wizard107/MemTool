@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-
+import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 
@@ -22,6 +22,7 @@ import Views.MasterGUI;
 import Views.Components.Button;
 import Views.Components.Label;
 import Views.Components.Panel;
+import Views.Components.TextPane;
 
 public class LearnView extends Panel{
     private JFrame frame;
@@ -41,6 +42,13 @@ public class LearnView extends Panel{
     private Button easy;
     private Button medium;
     private Button difficult;
+    private Label title;
+    private Label cardsLeft;
+    private Label due0;
+    private Label failed0;
+    private Label neu0;
+    private TextPane questionPane;
+    private TextPane answerPane;
     //ADD duedate to know which are questioned this day and use duetime as priority measurement to see which has the earliest turn.
     //everyone starts with duetime 0
     //if a card was learned but forgotten isForgotten becomes 1 it will be treated as a new card except in name
@@ -71,14 +79,20 @@ public class LearnView extends Panel{
             if((card.getDueDate().equals(LocalDate.now()))||(card.getDueDate().isBefore(LocalDate.now()))) queue.add(card);
         }
         cardsLeftNumber = queue.size();
-        questionPanel = new Panel();
-        answerPanel = new Panel();
-        questionPanel.setBounds(point.x, point.y, 500, 450);
-        answerPanel.setBounds(point.x + 575, point.y, 500, 450);
+        questionPane = new TextPane(point.x, point.y, 500, 450);
+        answerPane = new TextPane(point.x + 575, point.y, 500, 450);
+        //questionPane.setBorder(BorderFactory.createLineBorder(Color.black));
+        //answerPane.setBorder(BorderFactory.createLineBorder(Color.black));
+        //questionPanel = new Panel();
+        //answerPanel = new Panel();
+        //questionPanel.setBounds(point.x, point.y, 500, 450);
+        //answerPanel.setBounds(point.x + 575, point.y, 500, 450);
         learnPanel = new Panel();
         learnPanel.setBounds(0,0, frame.getWidth(), frame.getHeight());
         //learnPanel.setPreferredSize(new Dimension(frame.getWidth(), frame.getHeight()*2+50));
         learnPanel.setBackground(MasterGUI.black);
+        learnPanel.add(questionPane);
+        //learnPanel.add(answerPane);
         
         
         createButtons();
@@ -109,45 +123,59 @@ public class LearnView extends Panel{
         newCard();
     }
     private void createLearnView(){
-        Label title = new Label(point.x, point.y -30 , deck.getDeckName(), MasterGUI.white, 24f);
-        Label cardsLeft = new Label(point.x + 825, point.y -30 , "Cards Left: " + String.valueOf(cardsLeftNumber), MasterGUI.white, 24f);
-        Label due0 = new Label(point.x + 995, point.y -30 , String.valueOf(deck.calcDue()), MasterGUI.green, 20f);
-        Label failed0 = new Label(point.x + 1030, point.y -30 , String.valueOf(deck.calcAgain()), MasterGUI.red, 20f);
-        Label neu0 = new Label(point.x + 1065, point.y -30 , String.valueOf(deck.calcNew()), MasterGUI.blue, 20f);
+        title = new Label(point.x, point.y -30 , deck.getDeckName(), MasterGUI.white, 24f);
+        cardsLeft = new Label(point.x + 825, point.y -30 , "Cards Left: " + String.valueOf(cardsLeftNumber), MasterGUI.white, 24f);
+        //due0 = new Label(point.x + 995, point.y -30 , String.valueOf(deck.calcDue()), MasterGUI.green, 20f);
+        //failed0 = new Label(point.x + 1030, point.y -30 , String.valueOf(deck.calcAgain()), MasterGUI.red, 20f);
+        //neu0 = new Label(point.x + 1065, point.y -30 , String.valueOf(deck.calcNew()), MasterGUI.blue, 20f);
 
         learnPanel.add(title);
         learnPanel.add(cardsLeft);
-        learnPanel.add(due0);
-        learnPanel.add(failed0);
-        learnPanel.add(neu0);
+        //learnPanel.add(due0);
+        //learnPanel.add(failed0);
+        //learnPanel.add(neu0);
         
         }
+    private void removeBasicLearnView(){
+        learnPanel.remove(title);
+        learnPanel.remove(cardsLeft);
+        //learnPanel.remove(due0);
+        //learnPanel.remove(failed0);
+        //learnPanel.remove(neu0);
+    }
     private void createQA(){
 //        question = new Label(point.x, point.y+5 , "test" + String.valueOf(count), MasterGUI.black_gray, 20f);
-        question = new Label(point.x, point.y+5 , queue.peek().getFrontText(), MasterGUI.black_gray, 20f);
+        //question = new Label(point.x, point.y+5 , queue.peek().getFrontText(), MasterGUI.black_gray, 20f);
 
-        question.setBounds(point.x, point.y, 499, 449);
-        answer = new Label(point.x + 575, point.y, queue.peek().getBackText(), MasterGUI.black_gray,20f);
-        answer.setBounds(point.x+575, point.y, 499, 449);
-        learnPanel.add(question);
-        learnPanel.add(questionPanel);
+        //question.setBounds(point.x, point.y, 499, 449);
+        //learnPanel.add(questionPane);
+        questionPane.setText(queue.peek().getFrontText());
+        answerPane.setText(queue.peek().getBackText());
+        //answer = new Label(point.x + 575, point.y, queue.peek().getBackText(), MasterGUI.black_gray,20f);
+        //answer.setBounds(point.x+575, point.y, 499, 449);
+        //learnPanel.add(question);
+        //learnPanel.add(questionPanel);
     }
     private void newCard(){
         ActionListener revealCard = new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 
-                learnPanel.add(answer);
-                learnPanel.add(answerPanel);
+                //learnPanel.add(answer);
+                //learnPanel.add(answerPanel);
+                learnPanel.add(answerPane);
                 
             }
         };
         ActionListener changeCardEasy = new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 //wenn forgotten zutrifft und noch nicht ist muss hier auf forgotten gestellt werden
-                learnPanel.remove(questionPanel);
-                learnPanel.remove(answerPanel);
-                learnPanel.remove(question);
-                learnPanel.remove(answer);
+               // learnPanel.remove(questionPanel);
+                questionPane.setText("");
+                learnPanel.remove(answerPane);
+                answerPane.setText("");
+                //learnPanel.remove(answerPanel);
+                //learnPanel.remove(question);
+                //learnPanel.remove(answer);
                 try{
                     Card card = queue.poll();
                     int num = card.getDueTime();
@@ -159,7 +187,11 @@ public class LearnView extends Panel{
                         card.setDueTime(0);
                         if(card.getIsNew()||card.getWasForgotten())card.setDueDate(LocalDate.now().plusDays(1));
                         //else replace.setDueDate(dueDate);
-                        else card.setDueDate(LocalDate.now().plusDays(5));
+                        else{
+                            card.setCorrect(card.getCorrect()+1);
+                            card.setDueDate(LocalDate.now().plusDays(calcNextDueDate(card.getCorrect(), true)));
+                        }
+                        cardsLeftNumber--;
                         card.setWasForgotten(false);
                         card.setIsNew(false);
 
@@ -169,19 +201,25 @@ public class LearnView extends Panel{
                     deck.setCardDeck(cards);
                     user.setMainDeck(deck.getDeckPosition(), deck);
                     DatabaseAPI.editCard(card);
+                    HomeView.repaintHomeView();
+                    removeBasicLearnView();
+                    createLearnView();
+                    learnPanel.repaint();
                     //add forgotten and isnwer functions
                     System.out.println("easy");
                     createQA();
                 }catch(NullPointerException np){
                     System.out.println("easy card=null");
                     System.out.println("no cards left"); //<<------------------------------------- ab hier switch back
-                    question = new Label(point.x, point.y+5 , "No Cards Left", MasterGUI.black_gray, 20f);
+                    /*question = new Label(point.x, point.y+5 , "No Cards Left", MasterGUI.black_gray, 20f);
                     question.setBounds(point.x, point.y, 499, 449);
                     answer = new Label(point.x + 575, point.y, "Still no Cards Left", MasterGUI.black_gray,20f);
                     answer.setBounds(point.x+575, point.y, 499, 449);
                     //learnPanel.removeAll();
                     learnPanel.add(question);
-                    learnPanel.add(questionPanel);
+                    learnPanel.add(questionPanel);*/
+                    questionPane.setText("No Cards Left");
+                    answerPane.setText("Still no Cards left");
                     for(ActionListener a : easy.getActionListeners()){
                         easy.removeActionListener(a);
                     }
@@ -197,10 +235,14 @@ public class LearnView extends Panel{
         };
         ActionListener changeCardMedium = new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                learnPanel.remove(questionPanel);
+                /*learnPanel.remove(questionPanel);
                 learnPanel.remove(answerPanel);
                 learnPanel.remove(question);
                 learnPanel.remove(answer);
+                learnPanel.remove(questionPanel);*/
+                questionPane.setText("");
+                learnPanel.remove(answerPane);
+                answerPane.setText("");
                 try{
                 Card card = queue.poll();
                 int num = card.getDueTime();
@@ -212,7 +254,11 @@ public class LearnView extends Panel{
                         card.setDueTime(0);
                         if(card.getIsNew()||card.getWasForgotten())card.setDueDate(LocalDate.now().plusDays(1));
                         //else replace.setDueDate(dueDate);
-                        else card.setDueDate(LocalDate.now().plusDays(3));
+                        else{
+                            card.setCorrect(card.getCorrect()+1);
+                            card.setDueDate(LocalDate.now().plusDays(calcNextDueDate(card.getCorrect(), false)));
+                        }
+                        cardsLeftNumber--;
                         card.setWasForgotten(false);
                         card.setIsNew(false);
                         /*Card replace = cards.get(card.getId()-1);
@@ -230,23 +276,30 @@ public class LearnView extends Panel{
                         //cards.set(card.getId()-1, card);
                         //deck.setCardDeck(cards);*/
                     }
+                    
                     cards.set(card.getCardPosition(), card);
                     deck.setCardDeck(cards);
                     user.setMainDeck(deck.getDeckPosition(), deck);
                     DatabaseAPI.editCard(card);
+                    HomeView.repaintHomeView();
+                    removeBasicLearnView();
+                    createLearnView();
+                    learnPanel.repaint();
                     //add forgotten and isnwer functions
                     System.out.println("medium");
                     createQA();
                 }catch(NullPointerException npe){
                     System.out.println("null");
                     System.out.println("no cards left"); //<<------------------------------------- ab hier switch back
-                    question = new Label(point.x, point.y+5 , "No Cards Left", MasterGUI.black_gray, 20f);
+                    /*question = new Label(point.x, point.y+5 , "No Cards Left", MasterGUI.black_gray, 20f);
                     question.setBounds(point.x, point.y, 499, 449);
                     answer = new Label(point.x + 575, point.y, "Still no Cards Left", MasterGUI.black_gray,20f);
                     answer.setBounds(point.x+575, point.y, 499, 449);
                     //learnPanel.removeAll();
                     learnPanel.add(question);
-                    learnPanel.add(questionPanel);
+                    learnPanel.add(questionPanel);*/
+                    questionPane.setText("No Cards Left");
+                    answerPane.setText("Still no Cards left");
                     for(ActionListener a : easy.getActionListeners()){
                         medium.removeActionListener(a);
                     }
@@ -262,10 +315,13 @@ public class LearnView extends Panel{
         };
         ActionListener changeCardDifficult = new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                learnPanel.remove(questionPanel);
+                /*learnPanel.remove(questionPanel);
                 learnPanel.remove(answerPanel);
                 learnPanel.remove(question);
-                learnPanel.remove(answer);
+                learnPanel.remove(answer);*/
+                questionPane.setText("");
+                learnPanel.remove(answerPane);
+                answerPane.setText("");
                 try{
                     Card card = queue.poll();
                     card.setDueTime(0);
@@ -275,17 +331,23 @@ public class LearnView extends Panel{
                     deck.setCardDeck(cards);
                     user.setMainDeck(deck.getDeckPosition(), deck);
                     DatabaseAPI.editCard(card);
+                    HomeView.repaintHomeView();
+                    removeBasicLearnView();
+                    createLearnView();
+                    learnPanel.repaint();
                     System.out.println("hard");
                     createQA();
                 }catch(NullPointerException np){
                     System.out.println("no cards left"); //<<------------------------------------- ab hier switch back
-                    question = new Label(point.x, point.y+5 , "No Cards Left", MasterGUI.black_gray, 20f);
+                    /*question = new Label(point.x, point.y+5 , "No Cards Left", MasterGUI.black_gray, 20f);
                     question.setBounds(point.x, point.y, 499, 449);
                     answer = new Label(point.x + 575, point.y, "Still no Cards Left", MasterGUI.black_gray,20f);
                     answer.setBounds(point.x+575, point.y, 499, 449);
                     //learnPanel.removeAll();
                     learnPanel.add(question);
-                    learnPanel.add(questionPanel);
+                    learnPanel.add(questionPanel);*/
+                    questionPane.setText("No Cards Left");
+                    answerPane.setText("Still no Cards left");
                     for(ActionListener a : easy.getActionListeners()){
                         difficult.removeActionListener(a);
                     }

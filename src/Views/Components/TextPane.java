@@ -18,6 +18,7 @@ public class TextPane extends JTextPane{
         setCaretColor(new Color(60, 60, 75));
         setBackground(new Color(240, 240, 245));
         setFont(MasterGUI.poppinsFont.deriveFont(20f));
+        setForeground(MasterGUI.black_gray);
         setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
       }
 }

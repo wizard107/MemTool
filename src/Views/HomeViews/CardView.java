@@ -50,8 +50,8 @@ public class CardView extends Panel{
     private List<String> answers = new ArrayList<String>();
     private ArrayList<Card> cards = new ArrayList<Card>();
     private Button save;
-    TextPane questionPanelQA;
-    TextPane answerPanelQA;
+    private TextPane questionPanelQA;
+    private TextPane answerPanelQA;
     private static JScrollPane scroller;
 
     public CardView(JFrame frame, Deck deck, User user){
@@ -151,6 +151,7 @@ public class CardView extends Panel{
             idPanel.setBounds(point2.x-40, point2.y-40+ cardSpace, 385,25);
             idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, String.valueOf(card.getCardPosition()), MasterGUI.black,15f);
             createCardViewLabel(idlabel,35, 25);
+            //String[] test = card.getFrontText().split("\n");
             namelabel = new Label(point2.x-5, point2.y-40+ cardSpace, card.getFrontText(), MasterGUI.black,15f);
             createCardViewLabel(namelabel, 250, 25);
             duelabel = new Label(point2.x+245, point2.y-40+ cardSpace, card.getDueDate().format(DateTimeFormatter.ofPattern("dd-MMM-yy")), MasterGUI.black,15f);
@@ -183,8 +184,8 @@ public class CardView extends Panel{
             public void actionPerformed(ActionEvent e){
                 questionPanelQA.removeAll();
                 answerPanelQA.removeAll();
-                questionPanelQA.setText("New Card Added");
-                answerPanelQA.setText("New Card Added");
+                questionPanelQA.setText("New Card Added\nPRESS EDIT");
+                answerPanelQA.setText("New Card Added\nPRESS EDIT");
                 //deckSize++;
                 //currentID = deckSize;
                 //Card addCard = new Card(deck.getId(), "New Card Added", "New Card Added", 0,LocalDate.now(), false,true);
@@ -224,6 +225,7 @@ public class CardView extends Panel{
                 superPanel.repaint();
                 cardSpace+=35;
                 System.out.println("Added"); 
+                HomeView.repaintHomeView();
             }
         };
         addBtn.addActionListener(adding);
@@ -248,6 +250,8 @@ public class CardView extends Panel{
                 drawLeftSide();
                 superPanel.repaint();
                 System.out.println("Deleted");
+                HomeView.repaintHomeView();
+
             }
         };
         deleteBtn.addActionListener(deletion);
@@ -257,7 +261,7 @@ public class CardView extends Panel{
             public void actionPerformed(ActionEvent e){
                 Card card = cards.get(i);
                 questionPanelQA.removeAll();
-                answerPanelQA.removeAll();
+                answerPanelQA.removeAll(); 
                 questionPanelQA.setText(card.getFrontText());
                 answerPanelQA.setText(card.getBackText());
                 currentID = i;
@@ -271,14 +275,43 @@ public class CardView extends Panel{
             public void actionPerformed(ActionEvent e){
                 if(currentID==-1) System.out.println("Not Saved");
                 else{
-                    cards.get(currentID).setFrontText(questionPanelQA.getText());
-                    cards.get(currentID).setBackText(answerPanelQA.getText());
+                    String store[] = questionPanelQA.getText().split("\n");
+                    String txtQ = store[0];
+                    if(store.length>1){
+                        for(int i=0;i<store.length;i++){
+                            if(i>0)txtQ += "\n";
+                            txtQ += store[i];
+                        }
+                    }/*
+                    if(store.length>1){
+                        txtQ = "<html>";
+                        for(int i=0;i<store.length;i++){
+                            if(i>0)txtQ += "<br/>";
+                            txtQ += store[i];
+                        }
+                        txtQ += "</html>";
+                    }*/
+                    String store2[] = answerPanelQA.getText().split("\n");
+                    String txtA = store2[0];
+                    if(store2.length>1){
+                        for(int i=0;i<store2.length;i++){
+                            if(i>0)txtA += "\n";
+                            txtA += store2[i];
+                        }
+                    }
+                    
+                    cards.get(currentID).setFrontText(txtQ);
+                    cards.get(currentID).setBackText(txtA);
                     deck.setCardDeck(cards);
                     user.setMainDeck(deck.getDeckPosition(), deck);
                     DatabaseAPI.editCard(cards.get(currentID));
                     //questions.set(currentID, questionPanelQA.getText()); //<---set
                     //answers.set(currentID, answerPanelQA.getText());
-                    //answers[currentID] = answerPanelQA.getText();    
+                    //answers[currentID] = answerPanelQA.getText();   
+                    superPanel.removeAll();
+                    cardSpace = 35;
+                    drawLeftSide();
+                    superPanel.repaint(); 
                     System.out.println("Saved");          
                 }
             }
