@@ -1,5 +1,6 @@
 package Model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ public class Deck {
     private int newCards;
     private int again;
     private double rating;
+    private int deckPosition;
 
     /**
      * Default Constructor
@@ -62,6 +64,34 @@ public class Deck {
     }
     public int getNumberOfCards() { return numberOfCards;}
     public int getDue() { return due;}
+    public int calcDue(){
+        int countDue = 0;
+        for(Card card: cards){
+            if((card.getDueDate().equals(LocalDate.now())||(card.getDueDate().isBefore(LocalDate.now())))) countDue++;
+        }
+        return countDue;
+    }
+    public int calcNew(){
+        int countNew = 0;
+        for(Card card: cards){
+            if(card.getIsNew()) countNew++;
+        }
+        return countNew;
+    }
+    public int calcAgain(){
+        int countAgain = 0;
+        for(Card card: cards){
+            if(card.getWasForgotten()) countAgain++;
+        }
+        return countAgain;
+    }
+    public int getDeckPosition(){
+        return deckPosition;
+    }
+    public void setDeckPosition(int i){
+        deckPosition = i;
+    }
+    
     public int getNewCards() { return newCards;}
     public int getAgain() { return again;}
     public double getRating() {

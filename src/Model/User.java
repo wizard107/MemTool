@@ -104,4 +104,33 @@ public class User {
     public void setAdmin(Boolean admin) {
         isAdmin = admin;
     }
+    public Deck getMainDeck(int i){
+        return decks.get(i);
+    }
+    public void setMainDeck(int i, Deck deck){
+        decks.set(i, deck);
+    }
+    public void initializePositions(){
+        int count = 0;
+        for(Deck deck: decks){
+            deck.setDeckPosition(count++);
+            System.out.println(deck.getDeckName());
+            int countCards=0;
+            for(Card card : deck.getCards()){
+                card.setCardPosition(countCards++);
+            }
+        }
+    }
+    public void initializeDeckPositions(){
+        int count = 0;
+        for(Deck deck: decks){
+            deck.setDeckPosition(count++);
+        }
+    }
+    public void initializeCardPositions(int i){
+        int count = 0;
+        for(Card card: decks.get(i).getCards()){
+            card.setCardPosition(count++);
+        }
+    }
 }

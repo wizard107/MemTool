@@ -2,6 +2,7 @@ package Views;
 import javax.swing.*;
 
 import Controller.DatabaseAPI;
+import Model.Deck;
 import Model.User;
 import Views.Components.Button;
 import Views.Components.Label;
@@ -37,6 +38,7 @@ public class MainGUI extends MasterGUI{
     MainGUI(User user){
         frame = this;
         this.user = user;
+        this.user.initializePositions();
         setTitle("MemTool");
         setSize(1200,700);
         remove(panel); // removes LoginGUI panel content as panel from mastergui still saved it
@@ -192,6 +194,7 @@ public class MainGUI extends MasterGUI{
           }
         };
       }
+   
     public static void main(String[] args) throws Exception {
         System.out.println("Starting MainGUI");
         User guest = DatabaseAPI.getUser("Phil");

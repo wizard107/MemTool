@@ -3,16 +3,21 @@ package Views.HomeViews;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+
+import Controller.DatabaseAPI;
+
 import java.awt.Point;
 
 import Model.Card;
 import Model.Deck;
+import Model.User;
 import Views.MasterGUI;
 import Views.Components.Button;
 import Views.Components.Label;
@@ -26,6 +31,7 @@ public class LearnView extends Panel{
     private Panel answerPanel;
     private Panel questionPanel;
     private int count = 0;
+    private User user;
     private int cardsLeftNumber = 0;
     private ArrayList<Card> cards = new ArrayList<Card>();
     private PriorityQueue<Card> queue;
@@ -46,10 +52,11 @@ public class LearnView extends Panel{
     //if answered with ok + 2
     //if answered with easy +3
     //isnew will become false after reaching duetime 10
-    public LearnView(JFrame frame, Deck deck){
+    public LearnView(JFrame frame, Deck deck, User user){
         super(frame);
         this.frame = frame;
         this.deck  = deck;
+        this.user = user;
         Comparator<Card> dueDateComparator = new Comparator<Card>(){
             @Override
             public int compare(Card c1, Card c2){
@@ -61,9 +68,7 @@ public class LearnView extends Panel{
         for(int i=0;i<cards.size();i++){
             Card card = cards.get(i);
             //if(card.getDueTime()<=1)queue.add(card); this needs to compare dateentrys with today and earlier dates
-            card.setDueTime(0);
-            queue.add(card);
-
+            if((card.getDueDate().equals(LocalDate.now()))||(card.getDueDate().isBefore(LocalDate.now()))) queue.add(card);
         }
         cardsLeftNumber = queue.size();
         questionPanel = new Panel();
@@ -75,15 +80,7 @@ public class LearnView extends Panel{
         //learnPanel.setPreferredSize(new Dimension(frame.getWidth(), frame.getHeight()*2+50));
         learnPanel.setBackground(MasterGUI.black);
         
-        /*String[] testq = new String[3];
-        String[] testa = new String[3];
-
-        testq[0] = "test1";
-        testq[1] = "test2";
-        testq[2] = "test3";
-        testa[0] = "test1";
-        testa[1] = "test2";
-        testa[2] = "test3";*/
+        
         createButtons();
         createLearnView();
         add(learnPanel);
@@ -113,10 +110,10 @@ public class LearnView extends Panel{
     }
     private void createLearnView(){
         Label title = new Label(point.x, point.y -30 , deck.getDeckName(), MasterGUI.white, 24f);
-        Label cardsLeft = new Label(point.x + 825, point.y -30 , String.valueOf(cardsLeftNumber), MasterGUI.white, 24f);
-        Label due0 = new Label(point.x + 995, point.y -30 , String.valueOf(deck.getDue()), MasterGUI.green, 20f);
-        Label failed0 = new Label(point.x + 1030, point.y -30 , String.valueOf(deck.getAgain()), MasterGUI.red, 20f);
-        Label neu0 = new Label(point.x + 1065, point.y -30 , String.valueOf(deck.getNewCards()), MasterGUI.blue, 20f);
+        Label cardsLeft = new Label(point.x + 825, point.y -30 , "Cards Left: " + String.valueOf(cardsLeftNumber), MasterGUI.white, 24f);
+        Label due0 = new Label(point.x + 995, point.y -30 , String.valueOf(deck.calcDue()), MasterGUI.green, 20f);
+        Label failed0 = new Label(point.x + 1030, point.y -30 , String.valueOf(deck.calcAgain()), MasterGUI.red, 20f);
+        Label neu0 = new Label(point.x + 1065, point.y -30 , String.valueOf(deck.calcNew()), MasterGUI.blue, 20f);
 
         learnPanel.add(title);
         learnPanel.add(cardsLeft);
@@ -152,17 +149,26 @@ public class LearnView extends Panel{
                 learnPanel.remove(question);
                 learnPanel.remove(answer);
                 try{
-                Card card = queue.poll();
-                int num = (int)card.getDueTime();
+                    Card card = queue.poll();
+                    int num = card.getDueTime();
                     card.setDueTime(num+3);
                     if(card.getDueTime()<10){
                         queue.add(card);
                     }  
                     else{
-                        cards.get(card.getId()-1).setDueTime(0);//hier muss eigentlich duedate eingesetzt werden.
-                        cards.set(card.getId()-1, card);
-                        deck.setCardDeck(cards);
+                        card.setDueTime(0);
+                        if(card.getIsNew()||card.getWasForgotten())card.setDueDate(LocalDate.now().plusDays(1));
+                        //else replace.setDueDate(dueDate);
+                        else card.setDueDate(LocalDate.now().plusDays(5));
+                        card.setWasForgotten(false);
+                        card.setIsNew(false);
+
+                        //hier funktion um zu berechnen wie viele tage plus localdate.now variable correct als counter wie oft schon korrekt war
                     }
+                    cards.set(card.getCardPosition(), card);
+                    deck.setCardDeck(cards);
+                    user.setMainDeck(deck.getDeckPosition(), deck);
+                    DatabaseAPI.editCard(card);
                     //add forgotten and isnwer functions
                     System.out.println("easy");
                     createQA();
@@ -186,40 +192,7 @@ public class LearnView extends Panel{
                         easy.removeActionListener(a);
                     }
                 }
-                /*if(card==null){
-                    System.out.println("no cards left"); //<<------------------------------------- ab hier switch back
-                    question = new Label(point.x, point.y+5 , "No Cards Left", MasterGUI.black_gray, 20f);
-                    question.setBounds(point.x, point.y, 499, 449);
-                    answer = new Label(point.x + 575, point.y, "Still no Cards Left", MasterGUI.black_gray,20f);
-                    answer.setBounds(point.x+575, point.y, 499, 449);
-                    //learnPanel.removeAll();
-                    learnPanel.add(question);
-                    learnPanel.add(questionPanel);
-                    for(ActionListener a : easy.getActionListeners()){
-                        easy.removeActionListener(a);
-                    }
-                    for(ActionListener a : medium.getActionListeners()){
-                        easy.removeActionListener(a);
-                    }
-                    for(ActionListener a : difficult.getActionListeners()){
-                        easy.removeActionListener(a);
-                    }
-                }
-                else{
-                    int num = (int)card.getDueTime();
-                    card.setDueTime(num+3);
-                    if(card.getDueTime()<10){
-                        queue.add(card);
-                    }  
-                    else{
-                        cards.get(card.getId()-1).setDueTime(0);//hier muss eigentlich duedate eingesetzt werden.
-                        cards.set(card.getId()-1, card);
-                        deck.setCardDeck(cards);
-                    }
-                    //add forgotten and isnwer functions
-                    System.out.println("easy");
-                    createQA();
-                }*/
+                
             }
         };
         ActionListener changeCardMedium = new ActionListener(){
@@ -230,16 +203,37 @@ public class LearnView extends Panel{
                 learnPanel.remove(answer);
                 try{
                 Card card = queue.poll();
-                int num = (int)card.getDueTime();
+                int num = card.getDueTime();
                     card.setDueTime(num+2);
                     if(card.getDueTime()<10){
                         queue.add(card);
                     }  
                     else{
-                        cards.get(card.getId()-1).setDueTime(10);//hier muss eigentlich duedate eingesetzt werden zusätzlich.
-                        cards.set(card.getId()-1, card);
+                        card.setDueTime(0);
+                        if(card.getIsNew()||card.getWasForgotten())card.setDueDate(LocalDate.now().plusDays(1));
+                        //else replace.setDueDate(dueDate);
+                        else card.setDueDate(LocalDate.now().plusDays(3));
+                        card.setWasForgotten(false);
+                        card.setIsNew(false);
+                        /*Card replace = cards.get(card.getId()-1);
+                        //cards.get(card.getId()-1).setDueTime(0);//hier muss eigentlich duedate eingesetzt werden.
+                        replace.setDueTime(0);
+                        if(replace.getIsNew()||replace.getWasForgotten())replace.setDueDate(LocalDate.now().plusDays(1));
+                        //else replace.setDueDate(dueDate);
+                        else replace.setDueDate(LocalDate.now().plusDays(3));
+                        //hier funktion um zu berechnen wie viele tage plus localdate.now variable correct als counter wie oft schon korrekt war
+                        replace.setWasForgotten(false);
+                        replace.setIsNew(false);
+                        cards.set(replace.getId()-1, replace);
                         deck.setCardDeck(cards);
+                        //cards.get(card.getId()-1).setDueTime(10);//hier muss eigentlich duedate eingesetzt werden zusätzlich.
+                        //cards.set(card.getId()-1, card);
+                        //deck.setCardDeck(cards);*/
                     }
+                    cards.set(card.getCardPosition(), card);
+                    deck.setCardDeck(cards);
+                    user.setMainDeck(deck.getDeckPosition(), deck);
+                    DatabaseAPI.editCard(card);
                     //add forgotten and isnwer functions
                     System.out.println("medium");
                     createQA();
@@ -263,42 +257,7 @@ public class LearnView extends Panel{
                         medium.removeActionListener(a);
                     }
                 }
-                /*if(card==null){
-                    System.out.println("no cards left"); //<<------------------------------------- ab hier switch back
-                    question = new Label(point.x, point.y+5 , "No Cards Left", MasterGUI.black_gray, 20f);
-                    question.setBounds(point.x, point.y, 499, 449);
-                    answer = new Label(point.x + 575, point.y, "Still no Cards Left", MasterGUI.black_gray,20f);
-                    answer.setBounds(point.x+575, point.y, 499, 449);
-                    //learnPanel.removeAll();
-                    learnPanel.add(question);
-                    learnPanel.add(questionPanel);
-                    for(ActionListener a : easy.getActionListeners()){
-                        easy.removeActionListener(a);
-                    }
-                    for(ActionListener a : medium.getActionListeners()){
-                        easy.removeActionListener(a);
-                    }
-                    for(ActionListener a : difficult.getActionListeners()){
-                        easy.removeActionListener(a);
-                    }
-                }
-                else{
-                    //prüfen ob forgotten ist oder nicht, wenn forgotten dann weiter, wenn nicht dann direkt ersetzen mit neuem duedate
-                    //if isforgotten||isnew
-                    int num = (int)card.getDueTime();
-                    card.setDueTime(num+2);
-                    if(card.getDueTime()<10){
-                        queue.add(card);
-                    }  
-                    else{
-                        cards.get(card.getId()-1).setDueTime(10);//hier muss eigentlich duedate eingesetzt werden zusätzlich.
-                        cards.set(card.getId()-1, card);
-                        deck.setCardDeck(cards);
-                    }
-                    //add forgotten and isnwer functions
-                    System.out.println("medium");
-                    createQA();
-                }*/
+                
             }
         };
         ActionListener changeCardDifficult = new ActionListener(){
@@ -311,6 +270,11 @@ public class LearnView extends Panel{
                     Card card = queue.poll();
                     card.setDueTime(0);
                     queue.add(card);
+                    if((!card.getIsNew())&&(!card.getWasForgotten()))card.setWasForgotten(true);
+                    cards.set(card.getCardPosition(), card);
+                    deck.setCardDeck(cards);
+                    user.setMainDeck(deck.getDeckPosition(), deck);
+                    DatabaseAPI.editCard(card);
                     System.out.println("hard");
                     createQA();
                 }catch(NullPointerException np){
@@ -332,32 +296,7 @@ public class LearnView extends Panel{
                         difficult.removeActionListener(a);
                     }
                 }
-                /*if(card==null){
-                    System.out.println("no cards left"); //<<------------------------------------- ab hier switch back
-                    question = new Label(point.x, point.y+5 , "No Cards Left", MasterGUI.black_gray, 20f);
-                    question.setBounds(point.x, point.y, 499, 449);
-                    answer = new Label(point.x + 575, point.y, "Still no Cards Left", MasterGUI.black_gray,20f);
-                    answer.setBounds(point.x+575, point.y, 499, 449);
-                    //learnPanel.removeAll();
-                    learnPanel.add(question);
-                    learnPanel.add(questionPanel);
-                    for(ActionListener a : easy.getActionListeners()){
-                        easy.removeActionListener(a);
-                    }
-                    for(ActionListener a : medium.getActionListeners()){
-                        easy.removeActionListener(a);
-                    }
-                    for(ActionListener a : difficult.getActionListeners()){
-                        easy.removeActionListener(a);
-                    }
-                }
-                //if card.isForgotten()==false card.setForgotten()
-                else{
-                    card.setDueTime(0);
-                    queue.add(card);
-                    System.out.println("hard");
-                    createQA();
-                }*/
+                
             }
         };
         revealBtn.addActionListener(revealCard);
@@ -412,5 +351,11 @@ public class LearnView extends Panel{
         medium.addActionListener(cardMedium);
         difficult.addActionListener(cardDifficult);
 
+    }
+    public int calcNextDueDate(int correct, boolean isEasy){
+        int nextDueDate = 1;
+        if(isEasy)nextDueDate = (int) Math.pow(2,correct+1);
+        else nextDueDate = (int)Math.pow(2,correct);
+        return nextDueDate;   
     }
 }

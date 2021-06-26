@@ -9,14 +9,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import Controller.DatabaseAPI;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.color.*;
 
 import Model.Card;
 import Model.Deck;
+import Model.User;
 import Views.MainGUI;
 import Views.MasterGUI;
 import Views.Components.Button;
@@ -36,6 +43,7 @@ public class CardView extends Panel{
     private int currentID = -1; //if currentID of card is -1 it is not saved, otherwise saves the id of currentcard
     private static int deckSize = 9;
     private int cardSpace = 35;
+    private User user;
     //private String[] questions = new String[15];
     //private String[] answers = new String[15];
     private List<String> questions = new ArrayList<String>();
@@ -46,10 +54,11 @@ public class CardView extends Panel{
     TextPane answerPanelQA;
     private static JScrollPane scroller;
 
-    public CardView(JFrame frame, Deck deck){
+    public CardView(JFrame frame, Deck deck, User user){
         super(frame);
         this.frame = frame;
         this.deck  = deck;
+        this.user = user;
         cards = deck.getCards();
         /*for(int i=0;i<10;i++){
             //questions[i] = "question" + String.valueOf(i);
@@ -140,11 +149,11 @@ public class CardView extends Panel{
             deleteQA(delete, i);
             idPanel = new Panel();
             idPanel.setBounds(point2.x-40, point2.y-40+ cardSpace, 385,25);
-            idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, String.valueOf(card.getId()), MasterGUI.black,15f);
+            idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, String.valueOf(card.getCardPosition()), MasterGUI.black,15f);
             createCardViewLabel(idlabel,35, 25);
             namelabel = new Label(point2.x-5, point2.y-40+ cardSpace, card.getFrontText(), MasterGUI.black,15f);
             createCardViewLabel(namelabel, 250, 25);
-            duelabel = new Label(point2.x+245, point2.y-40+ cardSpace, String.valueOf(card.getDueTime()), MasterGUI.black,15f);
+            duelabel = new Label(point2.x+245, point2.y-40+ cardSpace, card.getDueDate().format(DateTimeFormatter.ofPattern("dd-MMM-yy")), MasterGUI.black,15f);
             createCardViewLabel(duelabel,100, 25);
             idPanel.setBorder(BorderFactory.createLineBorder(Color.black));
             //superPanel.add(save);
@@ -178,21 +187,26 @@ public class CardView extends Panel{
                 answerPanelQA.setText("New Card Added");
                 //deckSize++;
                 //currentID = deckSize;
-                Card addCard = new Card(deck.getId(), "New Card Added", "New Card Added", 1, false);
+                //Card addCard = new Card(deck.getId(), "New Card Added", "New Card Added", 0,LocalDate.now(), false,true);
+                Card addCard = new Card(cards.size(),deck.getId(), "New Card Added", "New Card Added", 0,LocalDate.now(), false,true);
+                addCard.setId(DatabaseAPI.storeCard(addCard));
                 cards.add(addCard);
                 deck.setCardDeck(cards);
+                user.setMainDeck(deck.getDeckPosition(), deck);
+                user.initializeCardPositions(deck.getDeckPosition());
+                
                 //questions.add(deckSize, "");
                 //answers.add(deckSize, "");
                 Panel idPanel = new Panel();
                 idPanel.setBounds(point2.x-40, point2.y-40+ cardSpace, 385,25);
                 idPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-                Card newCard = cards.get(cards.size()-1);
+                //Card newCard = cards.get(cards.size()-1);
                 //Label idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, "ID", MasterGUI.black,15f);
-                Label idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, String.valueOf(cards.size()), MasterGUI.black,15f);
+                Label idlabel = new Label(point2.x-40, point2.y-40+ cardSpace, String.valueOf(addCard.getCardPosition()), MasterGUI.black,15f);
                 createCardViewLabel(idlabel,35, 25);
-                Label namelabel = new Label(point2.x-5, point2.y-40+ cardSpace, newCard.getFrontText(), MasterGUI.black,15f);
+                Label namelabel = new Label(point2.x-5, point2.y-40+ cardSpace, addCard.getFrontText(), MasterGUI.black,15f);
                 createCardViewLabel(namelabel,250, 25);
-                Label duelabel = new Label(point2.x+245, point2.y-40+ cardSpace, String.valueOf(newCard.getDueTime()), MasterGUI.black,15f);
+                Label duelabel = new Label(point2.x+245, point2.y-40+ cardSpace, addCard.getDueDate().format(DateTimeFormatter.ofPattern("dd-MMM-yy")), MasterGUI.black,15f);
                 createCardViewLabel(duelabel,100, 25);
                 
                 superPanel.add(idlabel);
@@ -219,12 +233,16 @@ public class CardView extends Panel{
             public void actionPerformed(ActionEvent e){
                 questionPanelQA.removeAll();
                 answerPanelQA.removeAll();
+                Card del = cards.get(i);
                 cards.remove(i);
                 //questions.remove(i);
                 //answers.remove(i);
                 superPanel.removeAll();
                 cardSpace = 35;
                 deck.setCardDeck(cards);
+                user.setMainDeck(deck.getDeckPosition(), deck);
+                user.initializeCardPositions(deck.getDeckPosition());
+                DatabaseAPI.deleteCard(del.getId());
                 //deckSize--;
                 currentID = -1;
                 drawLeftSide();
@@ -255,6 +273,9 @@ public class CardView extends Panel{
                 else{
                     cards.get(currentID).setFrontText(questionPanelQA.getText());
                     cards.get(currentID).setBackText(answerPanelQA.getText());
+                    deck.setCardDeck(cards);
+                    user.setMainDeck(deck.getDeckPosition(), deck);
+                    DatabaseAPI.editCard(cards.get(currentID));
                     //questions.set(currentID, questionPanelQA.getText()); //<---set
                     //answers.set(currentID, answerPanelQA.getText());
                     //answers[currentID] = answerPanelQA.getText();    
