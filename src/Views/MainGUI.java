@@ -28,6 +28,7 @@ public class MainGUI extends MasterGUI{
     private static Button searchTab;
     private static Button logoutTab;
     private static Button profileTab;
+    private static Button adminTab;
     private static Button inactiveTab;
     public static HomeView homePanel;
     public static DeckView deckPanel;
@@ -53,6 +54,7 @@ public class MainGUI extends MasterGUI{
         add(homePanel);
         
         createSidebar();
+        createAdminPanel();
         createSidebarTabs();
         createLogoutTab();
         
@@ -70,7 +72,7 @@ public class MainGUI extends MasterGUI{
 
     
     private void createSidebarTabs(){
-        homeTab = new Button(tabPoint.x, tabPoint.y, "Home", homePanel);
+        homeTab = new Button(tabPoint.x, tabPoint.y, "         Home", homePanel);
         deckTab = new Button(tabPoint.x + 600, tabPoint.y, "Manage Decks", deckPanel);
         searchTab = new Button(tabPoint.x + 730, tabPoint.y, "         Search", searchPanel);
         profileTab = new Button(tabPoint.x + 860, tabPoint.y, "         Profile", profilePanel);
@@ -85,7 +87,7 @@ public class MainGUI extends MasterGUI{
         homeTab.setColor(active);
         inactiveTab = homeTab;
         List<Button> tabs = new ArrayList<>(
-        Arrays.asList(homeTab, searchTab, deckTab, profileTab));
+        Arrays.asList(homeTab, searchTab, deckTab, profileTab,adminTab));
         tabs.forEach(tab -> {
             tab.setInactiveColor(inactive);
             tab.addActionListener(e -> {
@@ -193,10 +195,19 @@ public class MainGUI extends MasterGUI{
                 switchPanel(newPanel);
           }
         };
-      }
+    }
+    private void createAdminPanel(){
+      //if(user.getAdmin()){
+        AdminView adminView = new AdminView(frame,user);
+        adminTab = new Button(tabPoint.x+130, tabPoint.y, "         Admin", adminView);
+        adminTab.setTab();
+        sidebar.add(adminTab);
+      //}
+    }
    
     public static void main(String[] args) throws Exception {
         System.out.println("Starting MainGUI");
+        //User guest = DatabaseAPI.getUser("Admin");
         User guest = DatabaseAPI.getUser("Phil");
         MainGUI system = new MainGUI(guest);
         system.setLocationRelativeTo(null);
