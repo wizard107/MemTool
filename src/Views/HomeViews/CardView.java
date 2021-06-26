@@ -188,7 +188,7 @@ public class CardView extends Panel{
                 //deckSize++;
                 //currentID = deckSize;
                 //Card addCard = new Card(deck.getId(), "New Card Added", "New Card Added", 0,LocalDate.now(), false,true);
-                Card addCard = new Card(cards.size(),deck.getId(), "New Card Added", "New Card Added", 0,LocalDate.now(), false,true);
+                Card addCard = new Card(deck.getId(), "New Card Added", "New Card Added",0, 0,LocalDate.now(), false,true);
                 addCard.setId(DatabaseAPI.storeCard(addCard));
                 cards.add(addCard);
                 deck.setCardDeck(cards);

@@ -8,6 +8,7 @@ public class Card {
     private int deckID;
     private String frontText;
     private String backText;
+    private int correct;
     /*
     private ImageIcon frontImage;
     private ImageIcon backImage;
@@ -22,10 +23,11 @@ public class Card {
     /**
      * Constructor for creating card from users input
      */
-    public Card(int deckID, String frontText, String backText, int dueTime, LocalDate dueDate, boolean wasForgotten, boolean isNew) {
+    public Card(int deckID, String frontText, String backText, int correct, int dueTime, LocalDate dueDate, boolean wasForgotten, boolean isNew) {
         this.deckID = deckID;
         this.frontText = frontText;
         this.backText = backText;
+        this.correct = correct;
         this.dueTime = dueTime;
         this.dueDate = dueDate;
         this.wasForgotten = wasForgotten;
@@ -35,11 +37,12 @@ public class Card {
     /**
      * Constructor for fetching card data from database and creating model class from it
      */
-    public Card(int id, int deckID, String frontText, String backText, int dueTime, LocalDate dueDate, boolean wasForgotten, boolean isNew) {
+    public Card(int id, int deckID, String frontText, String backText, int correct, int dueTime, LocalDate dueDate, boolean wasForgotten, boolean isNew) {
         this.id = id;
         this.deckID = deckID;
         this.frontText = frontText;
         this.backText = backText;
+        this.correct = correct;
         this.dueTime = dueTime;
         this.dueDate = dueDate;
         this.wasForgotten = wasForgotten;
@@ -52,6 +55,7 @@ public class Card {
     public String getBackText() { return backText; }
     //public ImageIcon getFrontImage() { return frontImage; }
     //public ImageIcon getBackImage() { return backImage; }
+    public int getCorrect() { return correct; }
     public int getDueTime() { return dueTime; }
     public LocalDate getDueDate() { return dueDate;}
     public boolean getWasForgotten() { return wasForgotten; }
@@ -68,6 +72,7 @@ public class Card {
     public void setBackText(String backText) { this.backText = backText; }
     //public void setFrontImage(ImageIcon frontImage) { this.frontImage = frontImage; }
     //public void setBackImage(ImageIcon backImage) { this.backImage = backImage; }
+    public void setCorrect(int correct) { this.correct = correct; }
     public void setDueTime(int dueTime) { this.dueTime = dueTime; }
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate;};
     public void setWasForgotten(boolean wasForgotten) { this.wasForgotten = wasForgotten; }
