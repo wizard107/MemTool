@@ -30,6 +30,7 @@ public class MasterGUI extends JFrame{
     public static Color red = new Color(227, 74, 100);
     public static Color blue = new Color(66, 103, 178);
     public static Color black = new Color(40,40,40);
+    public static Color light = new Color(240, 240, 245);
     public static Color babygreen = new Color(198,236,207);
     public static Font poppinsFont;
     public static Font poppinsFontBig;
