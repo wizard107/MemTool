@@ -47,7 +47,7 @@ public class MainGUI extends MasterGUI{
         tabPoint = new Point(0,0);
         homePanel = new HomeView(frame, user);//user muss geaddet werden
         deckPanel = new DeckView(frame, user);
-        searchPanel = new SearchView(frame);
+        //searchPanel = new SearchView(frame);
         profilePanel = new ProfileView(frame);
         currentPanel = homePanel;
         
@@ -73,21 +73,20 @@ public class MainGUI extends MasterGUI{
     
     private void createSidebarTabs(){
         homeTab = new Button(tabPoint.x, tabPoint.y, "         Home", homePanel);
-        deckTab = new Button(tabPoint.x + 600, tabPoint.y, "Manage Decks", deckPanel);
-        searchTab = new Button(tabPoint.x + 730, tabPoint.y, "         Search", searchPanel);
+        deckTab = new Button(tabPoint.x + 730, tabPoint.y, "Manage Decks", deckPanel);
+        //searchTab = new Button(tabPoint.x + 730, tabPoint.y, "         Search", searchPanel);
         profileTab = new Button(tabPoint.x + 860, tabPoint.y, "         Profile", profilePanel);
         //searchTab.setSize(65,50);
         //profileTab.setSize(65,50);
         sidebar.add(homeTab);
         sidebar.add(deckTab);
-        sidebar.add(searchTab);
         sidebar.add(profileTab);
         Color active = MasterGUI.purple;
         Color inactive = MasterGUI.purple.darker();
         homeTab.setColor(active);
         inactiveTab = homeTab;
         List<Button> tabs = new ArrayList<>(
-        Arrays.asList(homeTab, searchTab, deckTab, profileTab,adminTab));
+        Arrays.asList(homeTab, deckTab, profileTab,adminTab));
         tabs.forEach(tab -> {
             tab.setInactiveColor(inactive);
             tab.addActionListener(e -> {
