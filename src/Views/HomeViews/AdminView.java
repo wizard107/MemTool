@@ -155,6 +155,7 @@ public class AdminView extends Panel {
                 changeUser.setEmail(emailField.getText());
                 DatabaseAPI.editUser(changeUser);
                 System.out.println("User saved");
+                HomeView.repaintHomeView();
             }
             
         };
