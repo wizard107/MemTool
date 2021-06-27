@@ -64,6 +64,7 @@ public class Button extends JButton implements MouseListener {
         setContentAreaFilled(false);
         filled = false;
       }
+
       public Button(int x, int y, String text, int w, int h) {
         super(text);
         defaultSettings(w,h);

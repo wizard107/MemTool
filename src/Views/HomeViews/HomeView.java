@@ -87,7 +87,7 @@ public class HomeView extends Panel{
             List<String> deckTags = new ArrayList<>(deck.getTags().values());
             int i=0;
             for(String deckTag: deckTags){
-                Label tag = new Label(point.x + 60 + i++*125, point.y + 70 + deckSpace, deckTag, MasterGUI.black, 22f);
+                Label tag = new Label(point.x + 60 + i++*125, point.y + 70 + deckSpace, "#" + deckTag, MasterGUI.black, 22f);
                 panel.add(tag);
             }
             Button viewBtn = new Button(point.x + 700, point.y + 25 + deckSpace, "VIEW", MasterGUI.yellow, 110, 40);

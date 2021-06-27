@@ -1,6 +1,8 @@
 package Views.Components;
 
-import java.awt.Color;
+import Views.MasterGUI;
+
+import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -56,7 +58,27 @@ public class TextField extends JTextField{
         setBackground(new Color(240, 240, 245));
         setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
       }
+
+      public void setToStaticMode() {
+        this.setBackground(MasterGUI.black);
+        this.setForeground(MasterGUI.white);
+        repaint();
+        this.setEditable(false);
+      }
+
+      public void setToEditMode() {
+          this.setBackground(MasterGUI.white);
+          this.setForeground(MasterGUI.black);
+          repaint();
+          this.setEditable(true);
+      }
+
       /*public void setMaximumLength(int limit) {
         ((AbstractDocument) this.getDocument()).setDocumentFilter(new LimitInputLength(limit));
       }*/
+
+    public void appendLabel(String name, JPanel panel) {
+        Label label = new Label(this.getX(), this.getY() - 25, name, Color.black);
+        panel.add(label);
+    }
 }
