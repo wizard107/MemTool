@@ -27,6 +27,7 @@ public class AdminView extends Panel {
     private TextField nameField;
     private TextField pwField;
     private TextField emailField;
+    private Label noUser;
     private Label name;
     private Label pw;
     private Label email;
@@ -64,6 +65,8 @@ public class AdminView extends Panel {
         createAdminViewBtn(delete);
         name = new Label(point.x + 60, point.y+210 , "Username", MasterGUI.black, 20f);
         name.setForeground(MasterGUI.white);
+        noUser = new Label(point.x + 60, point.y+210 , "No such User exists!", MasterGUI.black, 20f);
+        noUser.setForeground(MasterGUI.white);
         email = new Label(point.x + 60, point.y+290 , "Email", MasterGUI.black, 20f);
         email.setForeground(MasterGUI.white);
         pw = new Label(point.x + 380, point.y+210 , "Password", MasterGUI.black, 20f);
@@ -94,6 +97,7 @@ public class AdminView extends Panel {
                 try{
                     System.out.println(searchField.getText());
                     changeUser = DatabaseAPI.getUser((searchField.getText()));
+                    adminPanel.remove(noUser);
                     adminPanel.add(pw);
                     adminPanel.add(name);
                     adminPanel.add(email);
@@ -107,7 +111,7 @@ public class AdminView extends Panel {
                     //pwField.setText("");
                     adminPanel.repaint();
                 }catch(NullPointerException ex){
-                    System.out.println("No such user exists");
+                    System.out.println("No such user exists!");
                     adminPanel.remove(pw);
                     adminPanel.remove(name);
                     adminPanel.remove(email);
@@ -116,6 +120,7 @@ public class AdminView extends Panel {
                     adminPanel.remove(emailField);
                     adminPanel.remove(save);
                     adminPanel.remove(delete);
+                    adminPanel.add(noUser);
                     adminPanel.repaint();
 
                 }
