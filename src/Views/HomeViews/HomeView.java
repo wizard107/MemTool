@@ -10,6 +10,7 @@ import java.util.Map;
 import java.awt.Point;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -47,6 +48,7 @@ public class HomeView extends Panel{
         String[] test = new String[3];
         *///for(int i=0;i<decks.size();i++){test[i] = "#durability";} //limit string in size because it becomes too long otherwise
         drawDecks(superPanel);
+        drawProfile();
         scroller = makeScroller(superPanel);
         add(scroller);
         frame.repaint();
@@ -64,8 +66,59 @@ public class HomeView extends Panel{
         
         decks = user.getDecks();
         drawDecks(superPanel);
+        drawProfile();
         //scroller = makeScroller(superPanel);
         frame.repaint();
+    }
+
+    public static void drawProfile(){
+        Label welcome = new Label(20,10, "Welcome Back", MasterGUI.black, 30f);
+        Panel profileBox = new Panel();
+        profileBox.setBounds(20, 50, 210, 220);
+        profileBox.setBackground(MasterGUI.black_gray);
+        Label username = new Label(80,20, user.getUsername(), MasterGUI.black,24f);
+        username.setForeground(MasterGUI.white);
+        //Panel icon = new Panel();
+        //icon.setBounds(80, 110 , 70, 70);
+        Panel deckbg = new Panel();
+        deckbg.setBounds(25, 110, 200, 50);
+        deckbg.setBackground(MasterGUI.yellow);
+        Panel card1bg = new Panel();
+        card1bg.setBounds(25, 175, 95, 50);
+        card1bg.setBackground(MasterGUI.yellow);
+        Panel card2bg = new Panel();
+        card2bg.setBounds(130, 175, 95, 50);
+        card2bg.setBackground(MasterGUI.yellow);
+        Label decksTotal = new Label(110,115, String.valueOf(user.getDecks().size()), MasterGUI.black,24f);
+        decksTotal.setForeground(MasterGUI.black);
+        Label decksTotalTxt = new Label(75,135, "Decks Total", MasterGUI.black,20f);
+        decksTotalTxt.setFont(MasterGUI.poppinsFontBig.deriveFont(15f));
+        int test[] = user.calcCardsLearned();
+        Label cardsLearned = new Label(65,180, String.valueOf(test[0]), MasterGUI.black,24f);
+        cardsLearned.setForeground(MasterGUI.black);
+        Label cardsLearnedTxt = new Label(35,200, "Cards Learned", MasterGUI.black,15f);
+        cardsLearnedTxt.setFont(MasterGUI.poppinsFontBig.deriveFont(10f));
+        Label cardsNew = new Label(170,180, String.valueOf(test[1]), MasterGUI.black,24f);
+        cardsNew.setForeground(MasterGUI.black);
+        Label cardsNewTxt = new Label(132,200, "Cards yet to learn", MasterGUI.black,15f);
+        cardsNewTxt.setFont(MasterGUI.poppinsFontBig.deriveFont(10f));
+        JLabel thinkImage = new JLabel(MasterGUI.thinkPNG);
+        thinkImage.setBounds(-40, 200, 500, 500);
+        //icon.setBackground(MasterGUI.purple);
+        superPanel.add(decksTotalTxt);
+        superPanel.add(decksTotal);
+        superPanel.add(cardsLearnedTxt);
+        superPanel.add(cardsLearned);
+        superPanel.add(cardsNew);
+        superPanel.add(cardsNewTxt);
+        superPanel.add(card1bg);
+        superPanel.add(card2bg);
+        profileBox.add(username);
+        superPanel.add(welcome);
+        superPanel.add(deckbg);
+        //superPanel.add(icon);
+        superPanel.add(profileBox);
+        superPanel.add(thinkImage);
     }
 
     private static void drawDecks(Panel panel){
@@ -76,7 +129,7 @@ public class HomeView extends Panel{
             card.setBounds(point.x, point.y + deckSpace, 925, 100);
             card.setBackground(MasterGUI.white);
             card.setBorder(BorderFactory.createLineBorder(Color.black));
-            Label title = new Label(point.x + 60, point.y +8 + deckSpace, deck.getDeckName(), MasterGUI.black, 24f);
+            Label title = new Label(point.x + 5, point.y +8 + deckSpace, deck.getDeckName(), MasterGUI.black, 24f);
             Label due = new Label(point.x + 530, point.y +22 + deckSpace, "DUE", MasterGUI.green, 20f);
             Label failed = new Label(point.x + 575, point.y +22 + deckSpace, "FAILED", MasterGUI.red, 20f);
             Label neu = new Label(point.x + 640, point.y +22 + deckSpace, "NEW", MasterGUI.blue, 20f);
@@ -87,7 +140,7 @@ public class HomeView extends Panel{
             List<String> deckTags = new ArrayList<>(deck.getTags().values());
             int i=0;
             for(String deckTag: deckTags){
-                Label tag = new Label(point.x + 60 + i++*125, point.y + 70 + deckSpace, deckTag, MasterGUI.black, 22f);
+                Label tag = new Label(point.x + 5 + i++*125, point.y + 70 + deckSpace, deckTag, MasterGUI.black, 22f);
                 panel.add(tag);
             }
             Button viewBtn = new Button(point.x + 700, point.y + 25 + deckSpace, "VIEW", MasterGUI.yellow, 110, 40);
@@ -113,10 +166,10 @@ public class HomeView extends Panel{
                 Panel viewMode = new CardView(frame, deck,user);
                 MainGUI.switchPanel(viewMode);
             });
-            Panel icon = new Panel();
-            icon.setBounds(point.x + 5, point.y + 10 + deckSpace, 45, 45);
-            icon.setBackground(MasterGUI.purple);
-            panel.add(icon);
+            //Panel icon = new Panel();
+            //icon.setBounds(point.x + 5, point.y + 10 + deckSpace, 45, 45);
+            //icon.setBackground(MasterGUI.purple);
+            //panel.add(icon);
             panel.add(title);
             panel.add(viewBtn);
             panel.add(learnBtn);
