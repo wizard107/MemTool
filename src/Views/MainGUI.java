@@ -137,13 +137,13 @@ public class MainGUI extends MasterGUI{
       });
   
       Label logoutlabel = new Label(30, 30, prompt, MasterGUI.purple);
-      Button yes = new Button(30, 60, "Yes", Color.BLUE);
-      Button no = new Button(140, 60, "No", Color.red);
-      no.setDark(false);
+      Button yes = new Button(30, 60, "Yes", MasterGUI.black_gray);
+      Button no = new Button(140, 60, "No", MasterGUI.black_gray);
+      //no.setDark(false);
   
       JPanel logoutp = new JPanel();
       logoutp.setLayout(null);
-      logoutp.setBackground(Color.green);
+      logoutp.setBackground(MasterGUI.babyblue);
       logoutp.add(logoutlabel);
       if (action != null) {
         logoutp.add(no);
@@ -197,12 +197,10 @@ public class MainGUI extends MasterGUI{
         };
     }
     private void createAdminPanel(){
-      //if(user.getAdmin()){
         AdminView adminView = new AdminView(frame,user);
         adminTab = new Button(tabPoint.x+130, tabPoint.y, "         Admin", adminView);
         adminTab.setTab();
-        sidebar.add(adminTab);
-      //}
+        if(user.getAdmin())sidebar.add(adminTab);
     }
    
     public static void main(String[] args) throws Exception {

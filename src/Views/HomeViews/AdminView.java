@@ -1,14 +1,17 @@
 package Views.HomeViews;
 
+import javax.swing.AbstractButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import Controller.DatabaseAPI;
+import Controller.PasswordEncryption;
 import Model.User;
 import Views.MainGUI;
 import Views.MasterGUI;
 import Views.Components.Panel;
 import Views.Components.TextField;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Insets;
@@ -28,7 +31,7 @@ public class AdminView extends Panel {
     private Label pw;
     private Label email;
     private Button save;
-    private Button delete;
+    private static Button delete;
     private User changeUser;
     Point point = new Point(50,50);
     public AdminView(JFrame frame, User currentUser){
@@ -72,7 +75,7 @@ public class AdminView extends Panel {
         emailField = new TextField(point.x + 60, point.y+320);
         emailField.setFont(MasterGUI.poppinsFont.deriveFont(15f));
         addSearchBtnFunction();
-        
+        SaveAndDelete();
         adminPanel.add(search);
         adminPanel.add(searchBtn);
         adminPanel.add(searchField);
@@ -101,7 +104,7 @@ public class AdminView extends Panel {
                     adminPanel.add(delete);
                     nameField.setText(changeUser.getUsername());
                     emailField.setText(changeUser.getEmail());
-                    pwField.setText("Enter new Password");
+                    //pwField.setText("");
                     adminPanel.repaint();
                 }catch(NullPointerException ex){
                     System.out.println("No such user exists");
@@ -120,8 +123,38 @@ public class AdminView extends Panel {
         };
         searchBtn.addActionListener(search);
     }
-    public void createUserTemplate(){
-        System.out.println("user");
+    public void SaveAndDelete(){
+        ActionListener deleteUser = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                System.out.println("User deleted");
+                adminPanel.remove(pw);
+                adminPanel.remove(name);
+                adminPanel.remove(email);
+                adminPanel.remove(nameField);
+                adminPanel.remove(pwField);
+                adminPanel.remove(emailField);
+                adminPanel.remove(save);
+                adminPanel.remove(delete);
+                DatabaseAPI.deleteUser(changeUser.getId());
+                adminPanel.repaint();
+            }
+            
+        };
+        ActionListener saveUser = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                changeUser.setUsername(nameField.getText());
+                if(!(pwField.getText().isEmpty())){
+                    String newPW = PasswordEncryption.createHash(pwField.getText());
+                    changeUser.setPassword(newPW);
+                }
+                changeUser.setEmail(emailField.getText());
+                DatabaseAPI.editUser(changeUser);
+                System.out.println("User saved");
+            }
+            
+        };
+        save.addActionListener(saveUser);
+        ((AbstractButton) delete).addActionListener(MainGUI.confirmDialogAction(deleteUser, "          Delete this User?"));
         
     }
     

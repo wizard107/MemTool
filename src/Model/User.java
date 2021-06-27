@@ -133,4 +133,18 @@ public class User {
             card.setCardPosition(count++);
         }
     }
+    public int[] calcCardsLearned(){
+        int[] calc = new int[2];
+        int countNew = 0;
+        int countTotal = 0;
+        for(Deck deck: decks){
+            for(Card card: deck.getCards()){
+                countTotal++;
+                if(card.getIsNew()||card.getWasForgotten()) countNew++;
+            }
+        }
+        calc[0] = countTotal - countNew;
+        calc[1] = countNew;
+        return calc;
+    }
 }
