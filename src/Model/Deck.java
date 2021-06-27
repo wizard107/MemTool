@@ -92,6 +92,7 @@ public class Deck {
     public void setDeckPosition(int i){
         deckPosition = i;
     }
+
     
     public int getNewCards() { return newCards;}
     public int getAgain() { return again;}

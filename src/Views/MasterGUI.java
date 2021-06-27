@@ -31,6 +31,7 @@ public class MasterGUI extends JFrame{
     public static Color blue = new Color(66, 103, 178);
     public static Color black = new Color(40,40,40);
     public static Color light = new Color(240, 240, 245);
+    public static Color babygreen = new Color(198,236,207);
     public static Font poppinsFont;
     public static Font poppinsFontBig;
     public static Font bodyFont;
@@ -39,6 +40,8 @@ public class MasterGUI extends JFrame{
     public static ImageIcon learnPNG = new ImageIcon(fileRoot + imagesRoot + "learn.png");
     public static ImageIcon stopPNG = new ImageIcon(fileRoot + imagesRoot + "stop.png");
     public static ImageIcon pcPNG = new ImageIcon(fileRoot + imagesRoot + "admin.png");
+    public static ImageIcon thinkPNG = new ImageIcon(fileRoot + imagesRoot + "think.png");
+    public static ImageIcon dragonPNG = new ImageIcon(fileRoot + imagesRoot + "dragon.png");
     protected static Panel panel = new Panel();
     public static void placeFieldLabel(Component comp, String name, JPanel panel) {
         Label label = new Label(comp.getX(), comp.getY() - 25, name, null);
