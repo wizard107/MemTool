@@ -1,5 +1,7 @@
 package Model;
 
+import Controller.DatabaseAPI;
+
 import javax.swing.*;
 import java.util.ArrayList;
 
@@ -146,5 +148,19 @@ public class User {
         calc[0] = countTotal - countNew;
         calc[1] = countNew;
         return calc;
+    }
+    /**
+     * Updates the local list of events from the database
+     */
+    public void updateDeckList(){
+        decks.clear();
+        decks.addAll(DatabaseAPI.getDecksFromUser(this.getId()));
+    }
+    /**
+     * Removes Deck from user
+     */
+    public void deleteDeck(Deck deck) {
+        DatabaseAPI.deleteDeck(deck.getId());
+        updateDeckList();
     }
 }

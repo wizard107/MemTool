@@ -63,7 +63,7 @@ public class HomeView extends Panel{
     }
     public static void repaintHomeView(){
         superPanel.removeAll();
-        
+        //user.updateEventList();
         decks = user.getDecks();
         drawDecks(superPanel);
         drawProfile();

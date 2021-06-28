@@ -248,7 +248,7 @@ public class DatabaseAPI {
     }
 
     public static ArrayList<Deck> getDecksFromUser(int key) {
-        String query = "SELECT Deck.* FROM Deck LEFT JOIN UserDeck ON UserDeck.id = Deck.id WHERE UserDeck.userID = ?";
+        String query = "SELECT Deck.* FROM Deck LEFT JOIN UserDeck ON UserDeck.deckID = Deck.id WHERE UserDeck.userID = ?";
         Connection connection = connectDatabase();
         ArrayList<Deck> decks = new ArrayList<Deck>();
 
@@ -471,6 +471,36 @@ public class DatabaseAPI {
             e.printStackTrace();
             closeDatabase(connection);
             return null;
+        }
+    }
+
+    /**
+     * Checks if given string/tag already exists in the table Tag
+     * @param topic string to be compared
+     * @return tagID if already existing tag, 0 if no such tag exist
+     */
+    public static int checkTag(String topic) {
+        String query = "SELECT * FROM Tag WHERE topic = ?";
+        Connection connection = connectDatabase();
+        int tagID = 0;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, topic);
+
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                if (result.getString("topic").equals(topic)) {
+                    tagID = result.getInt("id");
+                }
+            }
+            statement.close();
+            closeDatabase(connection);
+            return tagID;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return 0;
         }
     }
 

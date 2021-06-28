@@ -1,12 +1,18 @@
 package Views.HomeViews;
 
+import Controller.DatabaseAPI;
+import Controller.FormatData;
 import Model.Deck;
 import Model.User;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.*;
 
 
@@ -14,14 +20,24 @@ import Views.Components.Panel;
 import Views.Components.Label;
 import Views.Components.Button;
 import Views.Components.TextField;
+import Views.MainGUI;
 import Views.MasterGUI;
 
 public class DeckView extends Panel{
+
+    /** Card layout for upcoming events */
+    public static final int CREATE  = 0;
+
+    /** Card layout for all events. Unlocks edit and delete options */
+    public static final int EDIT  = 1;
+
     private static JFrame frame;
     private static JScrollPane scroller;
     private static Panel deckPanel;
     private static Panel editPanel;
 
+    private static Button addBtn;
+    private static Button createBtn;
     private static Button deleteBtn;
     private static Button editBtn;
     private static Button saveBtn;
@@ -65,7 +81,7 @@ public class DeckView extends Panel{
         deckPanel.setPreferredSize(new Dimension(frame.getWidth()/2 , frame.getHeight()*2+50));
         //deckPanel.setBounds(0,0, frame.getWidth()/2, frame.getHeight()*2+50);
         deckPanel.setBackground(MasterGUI.babyblue);
-        deckPanel.add(new Label(0, 0 ,"OBEN LINKS", MasterGUI.blue, 20f));
+        //deckPanel.add(new Label(0, 0 ,"OBEN LINKS", MasterGUI.blue, 20f));
 
 
 
@@ -76,16 +92,24 @@ public class DeckView extends Panel{
         //setBackground(MasterGUI.babyblue);
         Point point = new Point(250,50);
 
+        initEditFields();
+        initEditButtons();
+        initAddBtn();
+        initCreateDeckBtn();
+
         for(Deck deck : decks) {
             drawDeckCard(new Point(30,50 + margin), deck,  deckPanel);
             margin = margin + 120;
-            System.out.println(deck.getDeckName());
+            //System.out.println(deck.getDeckName());
         }
 
 
 
-        initEditFields();
-        initEditButtons();
+
+        //initEditFields();
+        //initEditButtons();
+        //initAddBtn();
+        //initCreateDeckBtn();
 
         //deckPanel.add(editPanel);
         scroller = makeScroller(deckPanel);
@@ -121,28 +145,55 @@ public class DeckView extends Panel{
         });
         cardBtn.addActionListener(e -> {
             titleField.setText(deck.getDeckName());
+            titleField.setEditable(false);
             List<String> deckTags = new ArrayList<>(deck.getTags().values());
             tagField.setText("");
             for(String tag : deckTags) {
-                tagField.append("#" + tag);
+                tagField.append("#" + tag + " ");
             }
+            tagField.setEditable(false);
+            editPanel.remove(cnclBtn);
+            editPanel.remove(createBtn);
+            editPanel.add(editBtn);
+            editPanel.add(deleteBtn);
+            editPanel.repaint();
+            editPanel.revalidate();
         });
 
         Label title = new Label(60, 8, deck.getDeckName(), MasterGUI.black, 24f);
 
 
-
-        Button edtBtn = new Button(350 , 8 ,  "EDIT");
+        Button viewBtn = new Button(325 , 25 ,  "VIEW", MasterGUI.yellow, 110, 40);
+        viewBtn.setFont(MasterGUI.poppinsFontBig);
+        viewBtn.setForeground(MasterGUI.black);
+        viewBtn.setContentAreaFilled(true);
+        viewBtn.setFocusPainted(false);
+        viewBtn.addActionListener(e -> {
+            Panel viewMode = new CardView(frame, deck,user);
+            MainGUI.switchPanel(viewMode);
+        });
 
 
         Button selectBtn = new Button(point.x + 475 , point.y ,  "SELECT");
 
+        deleteBtn = new Button((editWidth - 310) / 2, 450, "DELETE DECK", MasterGUI.red, titleField.getWidth(), titleField.getHeight());
+        ActionListener deleteAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                user.deleteDeck(deck);
+                user.updateDeckList();
+                toCreateMode();
+                repaintDeckCards();
+                HomeView.repaintHomeView();
+            }
+        };
+        deleteBtn.addActionListener(e -> MainGUI.confirmDialog(deleteAction, "Are sure that you want to delete?"));
 
         Panel icon = new Panel();
         icon.setBounds( 5, 10 , 45, 45);
         icon.setBackground(MasterGUI.purple);
 
-        deckCard.add(edtBtn);
+        deckCard.add(viewBtn);
         //deckCard.add(deleteBtn);
         deckCard.add(cardBtn);
         //deckCard.add(deckNameField);
@@ -156,6 +207,79 @@ public class DeckView extends Panel{
 
         deckCard.revalidate();
         panel.revalidate();
+    }
+
+    private void initAddBtn() {
+        addBtn = new Button(30, 7, "");
+        addBtn.setContentAreaFilled(false);
+        addBtn.setFocusPainted(false);
+        addBtn.setSize(35,35);
+        addBtn.setIcon(FormatData.resizeImageIcon(MasterGUI.addIcon, 0.4f));
+        addBtn.addActionListener(e -> {
+            toCreateMode();
+        });
+        deckPanel.add(addBtn);
+    }
+
+    private void toCreateMode() {
+        titleField.setToEditMode();
+        tagField.setEditable(true);
+        editPanel.remove(editBtn);
+        editPanel.remove(deleteBtn);
+        editPanel.remove(cnclBtn);
+        editPanel.add(createBtn);
+        //editPanel.setComponentZOrder(createBtn, 0);
+        editPanel.repaint();
+        editPanel.revalidate();
+    }
+
+    private void initCreateDeckBtn() {
+        createBtn = new Button((editWidth - 310) / 2, 400, "CREATE NEW DECK", MasterGUI.green, titleField.getWidth(), titleField.getHeight());
+        createBtn.setContentAreaFilled(true);
+        createBtn.setFocusPainted(false);
+        ActionListener createAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createDeckFromInput();
+                user.updateDeckList();
+                repaintDeckCards();
+                HomeView.repaintHomeView();
+            }
+        };
+        createBtn.addActionListener(e ->  {
+            MainGUI.confirmDialog(createAction, "Create new Deck?");
+        });
+        editPanel.add(createBtn);
+    }
+
+
+
+    private void createDeckFromInput() {
+
+        if(titleField.getText().isBlank()) {
+            MainGUI.confirmDialog("Deckname cannot be blank");
+            return;
+        }
+        String deckName = titleField.getText();
+        Deck deck = new Deck(deckName, 0,0,0,0,0);
+        int deckID = DatabaseAPI.storeDeck(deck);
+        DatabaseAPI.createUserDeckBridge(user.getId(), deckID);
+
+        String[] tags = FormatData.formatHashtags(tagField.getText());
+        for(String tag : tags) {
+            if(!FormatData.isBlankString(tag)) {
+                int tagID = DatabaseAPI.checkTag(tag);
+                if(tagID != 0) {
+                    DatabaseAPI.createDeckTagBridge(deckID, tagID);
+                } else {
+                    int newTagID = DatabaseAPI.storeTag(tag);
+                    DatabaseAPI.createDeckTagBridge(deckID, newTagID);
+                }
+                //System.out.println(tag);
+            }
+        }
+
+
     }
 
     private void initEditButtons() {
@@ -190,8 +314,8 @@ public class DeckView extends Panel{
             editPanel.revalidate();
         });
 
-        editPanel.add(editBtn);
-        editPanel.add(deleteBtn);
+        //editPanel.add(editBtn);
+        //editPanel.add(deleteBtn);
 
     }
 
@@ -211,15 +335,25 @@ public class DeckView extends Panel{
         tagField.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         tagField.setBounds((editWidth - 310) / 2, 180, titleField.getWidth(), 110);
         tagField.setLineWrap(true);
-        tagField.setEditable(false);
+        tagField.setEditable(true);
         MasterGUI.placeFieldLabel(tagField, "Tags", editPanel);
         editPanel.add(tagField);
     }
 
-    public static void drawTagSection(Deck deck) {
 
+    private void repaintDeckCards() {
+        deckPanel.removeAll();
+        //user.updateDeckList();
+        decks = user.getDecks();
+        int margin = 0;
+        for(Deck deck : decks) {
+            drawDeckCard(new Point(30,50 + margin), deck,  deckPanel);
+            margin = margin + 120;
+        }
+        deckPanel.add(addBtn);
+        deckPanel.repaint();
+        deckPanel.revalidate();
     }
-
 
     private JScrollPane makeScroller(Panel panel){
         scroller = new JScrollPane(panel);
