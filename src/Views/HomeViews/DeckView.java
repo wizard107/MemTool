@@ -133,7 +133,7 @@ public class DeckView extends Panel{
         switchDeck(cardBtn, i);
 
         Label title = new Label(60, 8, deck.getDeckName(), MasterGUI.black, 24f);
-
+        title.setSize(250, 25);
 
         Button viewBtn = new Button(325 , 25 ,  "VIEW", MasterGUI.yellow, 110, 40);
         viewBtn.setFont(MasterGUI.poppinsFontBig);
@@ -422,7 +422,7 @@ public class DeckView extends Panel{
     }
 
     private void initEditFields() {
-        titleField = new TextField((editWidth - 310) / 2, 100, "HELLO TEXTFIELD");
+        titleField = new TextField((editWidth - 310) / 2, 100, "");
         titleField.setFont(MasterGUI.basicFont);
         MasterGUI.placeFieldLabel(titleField, "Deckname", editPanel, MasterGUI.blue);
         editPanel.add(titleField);
