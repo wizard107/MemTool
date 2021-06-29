@@ -248,7 +248,7 @@ public class DatabaseAPI {
     }
 
     public static ArrayList<Deck> getDecksFromUser(int key) {
-        String query = "SELECT Deck.* FROM Deck LEFT JOIN UserDeck ON UserDeck.id = Deck.id WHERE UserDeck.userID = ?";
+        String query = "SELECT Deck.* FROM Deck LEFT JOIN UserDeck ON UserDeck.deckID = Deck.id WHERE UserDeck.userID = ?";
         Connection connection = connectDatabase();
         ArrayList<Deck> decks = new ArrayList<Deck>();
 
@@ -337,7 +337,7 @@ public class DatabaseAPI {
             statement.setInt(4, deck.getNewCards());
             statement.setInt(5, deck.getAgain());
             statement.setDouble(6, deck.getRating());
-            statement.setInt(6, deck.getId());
+            statement.setInt(7, deck.getId());
 
             statement.executeUpdate();
             statement.close();
@@ -475,6 +475,36 @@ public class DatabaseAPI {
     }
 
     /**
+     * Checks if given string/tag already exists in the table Tag
+     * @param topic string to be compared
+     * @return tagID if already existing tag, 0 if no such tag exist
+     */
+    public static int checkTag(String topic) {
+        String query = "SELECT * FROM Tag WHERE topic = ?";
+        Connection connection = connectDatabase();
+        int tagID = 0;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, topic);
+
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                if (result.getString("topic").equals(topic)) {
+                    tagID = result.getInt("id");
+                }
+            }
+            statement.close();
+            closeDatabase(connection);
+            return tagID;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return 0;
+        }
+    }
+
+    /**
      * Creates a new entry in table Tag
      *
      * @param tag to the deck related tag as string to be stored
@@ -573,6 +603,32 @@ public class DatabaseAPI {
 
         try {
             PreparedStatement statement = connection.prepareStatement(insert);
+            statement.setInt(1, deckID);
+            statement.setInt(2, tagID);
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
+    }
+
+    /**
+     * Deletes entry in table DeckTag  since the relation between table Deck and table tag
+     * is a many-to-many relation
+     * @param deckID deck id the corresponding user
+     * @param tagID tag id of corresponding deck
+     * @return true if deletion successful, false if deletion failed
+     */
+    public static boolean deleteDeckTagBridge(int deckID, int tagID) {
+        String delete = "DELETE FROM DeckTag WHERE deckID = ? AND tagID = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(delete);
             statement.setInt(1, deckID);
             statement.setInt(2, tagID);
             statement.executeUpdate();
