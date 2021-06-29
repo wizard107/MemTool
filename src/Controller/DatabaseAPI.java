@@ -337,7 +337,7 @@ public class DatabaseAPI {
             statement.setInt(4, deck.getNewCards());
             statement.setInt(5, deck.getAgain());
             statement.setDouble(6, deck.getRating());
-            statement.setInt(6, deck.getId());
+            statement.setInt(7, deck.getId());
 
             statement.executeUpdate();
             statement.close();
@@ -603,6 +603,32 @@ public class DatabaseAPI {
 
         try {
             PreparedStatement statement = connection.prepareStatement(insert);
+            statement.setInt(1, deckID);
+            statement.setInt(2, tagID);
+            statement.executeUpdate();
+            statement.close();
+            closeDatabase(connection);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return false;
+        }
+    }
+
+    /**
+     * Deletes entry in table DeckTag  since the relation between table Deck and table tag
+     * is a many-to-many relation
+     * @param deckID deck id the corresponding user
+     * @param tagID tag id of corresponding deck
+     * @return true if deletion successful, false if deletion failed
+     */
+    public static boolean deleteDeckTagBridge(int deckID, int tagID) {
+        String delete = "DELETE FROM DeckTag WHERE deckID = ? AND tagID = ?";
+        Connection connection = connectDatabase();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(delete);
             statement.setInt(1, deckID);
             statement.setInt(2, tagID);
             statement.executeUpdate();

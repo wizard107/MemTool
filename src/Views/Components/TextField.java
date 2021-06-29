@@ -60,8 +60,8 @@ public class TextField extends JTextField{
       }
 
       public void setToStaticMode() {
-        this.setBackground(MasterGUI.black);
-        this.setForeground(MasterGUI.white);
+        this.setBackground(MasterGUI.babyred);
+        this.setForeground(MasterGUI.black);
         repaint();
         this.setEditable(false);
       }
