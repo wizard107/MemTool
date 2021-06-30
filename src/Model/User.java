@@ -1,5 +1,7 @@
 package Model;
 
+import Controller.DatabaseAPI;
+
 import javax.swing.*;
 import java.util.ArrayList;
 
@@ -9,14 +11,6 @@ public class User {
 
     /** Username of user */
     private String username;
-
-    // brauchen wir firstname und lastname?
-
-    /** Firstname of user */
-    private String firstname;
-
-    /** Lastname of user */
-    private String lastname;
 
     /** Password of user */
     private String password;
@@ -63,10 +57,6 @@ public class User {
     public String getUsername() {
         return username;
     }
-    public String getFirstname() { return firstname; }
-    public String getLastname() {
-        return lastname;
-    }
     public String getPassword() {
         return password;
     }
@@ -85,12 +75,6 @@ public class User {
     }
     public void setUsername(String username) {
         this.username = username;
-    }
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
     }
     public void setPassword(String password) {
         this.password = password;
@@ -146,5 +130,25 @@ public class User {
         calc[0] = countTotal - countNew;
         calc[1] = countNew;
         return calc;
+    }
+    /**
+     * Updates the local list of events from the database
+     */
+    public void updateDeckList(){
+        decks.clear();
+        decks.addAll(DatabaseAPI.getDecksFromUser(this.getId()));
+        initializeDeckPositions();
+    }
+    /**
+     * Removes Deck from user
+     */
+    public void deleteDeck(Deck deck) {
+        DatabaseAPI.deleteDeck(deck.getId());
+        updateDeckList();
+    }
+
+    public void editDeck(Deck deck) {
+        DatabaseAPI.editDeck(deck);
+        updateDeckList();
     }
 }

@@ -32,6 +32,7 @@ public class MasterGUI extends JFrame{
     public static Color black = new Color(40,40,40);
     public static Color light = new Color(240, 240, 245);
     public static Color babygreen = new Color(198,236,207);
+    public static Color grey = new Color(211,211,211);
     public static Font poppinsFont;
     public static Font poppinsFontBig;
     public static Font bodyFont;
@@ -43,11 +44,17 @@ public class MasterGUI extends JFrame{
     public static ImageIcon thinkPNG = new ImageIcon(fileRoot + imagesRoot + "think.png");
     public static ImageIcon dragonPNG = new ImageIcon(fileRoot + imagesRoot + "dragon.png");
     public static ImageIcon lockPNG = new ImageIcon(fileRoot + imagesRoot + "lock.png");
+    public static ImageIcon addIcon = new ImageIcon(fileRoot + imagesRoot + "add_icon.png");
     protected static Panel panel = new Panel();
     public static void placeFieldLabel(Component comp, String name, JPanel panel) {
         Label label = new Label(comp.getX(), comp.getY() - 25, name, null);
         panel.add(label);
       }
+    public static void placeFieldLabel(Component comp, String name, JPanel panel, Color color) {
+        Label label = new Label(comp.getX(), comp.getY() - 25, name, color);
+        panel.add(label);
+    }
+
     public MasterGUI() {
         //setIconImage(favicon.getImage());
         setResizable(false);
@@ -84,7 +91,6 @@ public class MasterGUI extends JFrame{
             }
         });
       }
-
 
     public static void setComponentStyles(JPanel panel, String colorMode) {
         Color foreground;
@@ -138,4 +144,6 @@ public class MasterGUI extends JFrame{
     
         }
     }
+
+
 }
