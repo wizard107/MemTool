@@ -81,6 +81,7 @@ public class MainGUI extends MasterGUI{
         sidebar.add(homeTab);
         sidebar.add(deckTab);
         sidebar.add(profileTab);
+        //sidebar.add(searchTab);
         Color active = MasterGUI.purple;
         Color inactive = MasterGUI.purple.darker();
         homeTab.setColor(active);
@@ -205,7 +206,7 @@ public class MainGUI extends MasterGUI{
     public static void main(String[] args) throws Exception {
         System.out.println("Starting MainGUI");
         //User guest = DatabaseAPI.getUser("Admin");
-        User guest = DatabaseAPI.getUser("Phil");
+        User guest = DatabaseAPI.getUser("Admin");
         MainGUI system = new MainGUI(guest);
         system.setLocationRelativeTo(null);
     }

@@ -14,6 +14,7 @@ public class Deck {
     private int newCards;
     private int again;
     private double rating;
+    //private boolean isPublic;
     private int deckPosition;
 
     /**
@@ -35,6 +36,7 @@ public class Deck {
         this.newCards = newCards;
         this.again = again;
         this.rating = rating;
+        //this.isPublic = isPublic;
     }
 
     /**
@@ -48,6 +50,7 @@ public class Deck {
         this.newCards = newCards;
         this.again = again;
         this.rating = rating;
+        //this.isPublic = false;
     }
 
     public int getId() {
@@ -93,12 +96,12 @@ public class Deck {
         deckPosition = i;
     }
 
-    
     public int getNewCards() { return newCards;}
     public int getAgain() { return again;}
     public double getRating() {
         return rating;
     }
+    //public boolean getIsPublic() { return isPublic;}
 
     public void setId(int id) {
         this.id = id;
@@ -119,6 +122,7 @@ public class Deck {
     public void setRating(double rating) {
         this.rating = rating;
     }
+    //public void setIsPublic(boolean isPublic) {this.isPublic = isPublic;}
     public int getSize(){
         return cards.size();
     }

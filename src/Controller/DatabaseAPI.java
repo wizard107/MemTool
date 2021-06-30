@@ -180,9 +180,10 @@ public class DatabaseAPI {
             String username = result.getString("username");
             String pw = result.getString("pw");
             String email = result.getString("email");
+            boolean isAdmin = result.getBoolean("isAdmin");
             ArrayList<Deck> decks = getDecksFromUser(id);
 
-            User user = new User(id, username, pw, email, decks);
+            User user = new User(id, username, pw, email, decks, isAdmin);
             closeDatabase(connection);
             System.out.println("User data fetched");
             return user;
@@ -229,11 +230,10 @@ public class DatabaseAPI {
         Connection connection = connectDatabase();
 
         try {
-            /*
             ArrayList<Deck> decks = getDecksFromUser(userID);
             for(Deck d : decks) {
                 deleteDeck(d.getId());
-            }*/
+            }
             PreparedStatement statement = connection.prepareStatement(delete);
             statement.setInt(1, userID);
             statement.executeUpdate();
@@ -260,17 +260,18 @@ public class DatabaseAPI {
             while(result.next()) {
                 int deckID = result.getInt("id");
                 String deckname = result.getString("deckname");
-                int numberOfCards = result.getInt("numberofCards");
+                int numberOfCards = result.getInt("numberOfCards");
                 int due = result.getInt("due");
                 int newCards = result.getInt("new");
                 int again = result.getInt("again");
                 double rating = result.getDouble("rating");
+                //boolean isPublic = result.getBoolean("isPublic");
                 ArrayList<Card> cards = getCardsFromDeck(deckID);
                 Map<Integer, String> tags = getTagsFromDeck(deckID);
 
                 //test
                 Deck deck = new Deck(deckID, deckname, cards, tags, numberOfCards, due,
-                        newCards, again, rating);
+                        newCards, again, rating/*, isPublic*/);
                 decks.add(deck);
             }
             if(!connection.isClosed()) {
@@ -306,6 +307,7 @@ public class DatabaseAPI {
             statement.setInt(4, deck.getNewCards());
             statement.setInt(5, deck.getAgain());
             statement.setDouble(6, deck.getRating());
+            //statement.setBoolean(7, deck.getIsPublic());
             statement.executeUpdate();
 
             result = statement.getGeneratedKeys();
@@ -402,6 +404,46 @@ public class DatabaseAPI {
         }
     }
 
+    /*
+    public static ArrayList<Deck> getAllPublicDecks() {
+        String query = "SELECT * FROM Deck WHERE isPublic = ?";
+        Connection connection = connectDatabase();
+        ArrayList<Deck> publicDecks = new ArrayList<Deck>();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setBoolean(1, true);
+            ResultSet result = statement.executeQuery();
+
+            while(result.next()) {
+                int deckID = result.getInt("id");
+                String deckname = result.getString("deckname");
+                int numberOfCards = result.getInt("numberOfCards");
+                int due = result.getInt("due");
+                int newCards = result.getInt("new");
+                int again = result.getInt("again");
+                double rating = result.getDouble("rating");
+                boolean isPublic = result.getBoolean("isPublic");
+                ArrayList<Card> cards = getCardsFromDeck(deckID);
+                Map<Integer, String> tags = getTagsFromDeck(deckID);
+
+                Deck deck = new Deck(deckID, deckname, cards, tags, numberOfCards, due,
+                        newCards, again, rating, isPublic);
+                publicDecks.add(deck);
+            }
+            if(!connection.isClosed()) {
+                statement.close();
+                closeDatabase(connection);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            closeDatabase(connection);
+            return null;
+        }
+        System.out.println("Fetched all public Decks");
+        return publicDecks;
+    }
+     */
 
     /**
      * Gets all cards of a deck through deckID

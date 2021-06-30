@@ -51,6 +51,18 @@ public class User {
         this.isAdmin = false;
     }
 
+    /**
+     * Constructor for fetching user data from database
+     */
+    public User(int id, String username, String password, String email, ArrayList<Deck> decks, boolean isAdmin) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.decks = decks;
+        this.isAdmin = isAdmin;
+    }
+
     public int getId() {
         return id;
     }

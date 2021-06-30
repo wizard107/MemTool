@@ -81,17 +81,6 @@ public class DeckView extends Panel{
         deckPanel.setPreferredSize(new Dimension(frame.getWidth()/2 , frame.getHeight()*2+50));
         deckPanel.setBackground(MasterGUI.babyblue);
 
-
-        /*
-        int margin = 0;
-        Point point = new Point(250,50);
-        for(int i = 0; i < decks.size(); i++) {
-            drawDeckCard(new Point(30,50 + margin), i,  deckPanel);
-            margin = margin + 120;
-        }
-
-         */
-
         drawLeftSide();
         initEditFields();
         initEditButtons();
@@ -248,6 +237,8 @@ public class DeckView extends Panel{
      */
     private void initCreateDeckBtn() {
         createBtn = new Button((editWidth - 310) / 2, 400, "CREATE NEW DECK", MasterGUI.green, titleField.getWidth(), titleField.getHeight());
+        createBtn.setFont(MasterGUI.poppinsFont);
+        createBtn.setForeground(MasterGUI.white);
         createBtn.setContentAreaFilled(true);
         createBtn.setFocusPainted(false);
         ActionListener createAction = new ActionListener() {
@@ -300,6 +291,8 @@ public class DeckView extends Panel{
         editBtn = new Button((editWidth - 310) / 2, 400, "EDIT DECK", MasterGUI.yellow, titleField.getWidth(), titleField.getHeight());
         editBtn.setContentAreaFilled(true);
         editBtn.setFocusPainted(false);
+        editBtn.setFont(MasterGUI.poppinsFont);
+        editBtn.setForeground(MasterGUI.black);
         editBtn.addActionListener(e -> {
             titleField.setToEditMode();
             tagField.setEditable(true);
@@ -317,10 +310,16 @@ public class DeckView extends Panel{
         saveBtn = new Button((editWidth - 310) / 2, 400, "SAVE CHANGES", MasterGUI.green, titleField.getWidth(), titleField.getHeight());
         saveBtn.setContentAreaFilled(true);
         saveBtn.setFocusPainted(false);
+        saveBtn.setFont(MasterGUI.poppinsFont);
+        saveBtn.setForeground(MasterGUI.white);
         ActionListener saveChanges = saveChanges();
         saveBtn.addActionListener(e -> MainGUI.confirmDialog(saveChanges, "Save Changes?"));
 
         deleteBtn = new Button((editWidth - 310) / 2, 450, "DELETE DECK", MasterGUI.red, titleField.getWidth(), titleField.getHeight());
+        deleteBtn.setContentAreaFilled(true);
+        deleteBtn.setFocusPainted(false);
+        deleteBtn.setFont(MasterGUI.poppinsFont);
+        deleteBtn.setForeground(MasterGUI.white);
         ActionListener deleteAction = deleteAction();
         deleteBtn.addActionListener(e -> MainGUI.confirmDialog(deleteAction, "Are sure that you want to delete?"));
 
@@ -328,6 +327,8 @@ public class DeckView extends Panel{
         cnclBtn = new Button((editWidth - 310) / 2, 450, "CANCEL", MasterGUI.red, titleField.getWidth(), titleField.getHeight());
         cnclBtn.setContentAreaFilled(true);
         cnclBtn.setFocusPainted(false);
+        cnclBtn.setFont(MasterGUI.poppinsFont);
+        cnclBtn.setForeground(MasterGUI.white);
         cnclBtn.addActionListener(e -> {
             titleField.setEditable(false);
             tagField.setEditable(false);
@@ -424,7 +425,7 @@ public class DeckView extends Panel{
     private void initEditFields() {
         titleField = new TextField((editWidth - 310) / 2, 100, "");
         titleField.setFont(MasterGUI.basicFont);
-        MasterGUI.placeFieldLabel(titleField, "Deckname", editPanel, MasterGUI.blue);
+        MasterGUI.placeFieldLabel(titleField, "Deckname", editPanel, MasterGUI.white);
         editPanel.add(titleField);
 
 
@@ -436,7 +437,7 @@ public class DeckView extends Panel{
         tagField.setBounds((editWidth - 310) / 2, 180, titleField.getWidth(), 110);
         tagField.setLineWrap(true);
         tagField.setEditable(true);
-        MasterGUI.placeFieldLabel(tagField, "Tags", editPanel, MasterGUI.blue);
+        MasterGUI.placeFieldLabel(tagField, "Tags", editPanel, MasterGUI.white);
         editPanel.add(tagField);
     }
 
