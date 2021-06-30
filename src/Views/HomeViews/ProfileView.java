@@ -120,7 +120,7 @@ public class ProfileView extends Panel{
                 user.setUsername(nameField.getText());
                 if(!(pwField.getPassword()==null)){
                     if(validatePW()){
-                        String newPW = PasswordEncryption.createHash(pwField.getPassword().toString());
+                        String newPW = PasswordEncryption.createHash(String.valueOf(pwField.getPassword()));
                         user.setPassword(newPW);
                     }
                     else{
