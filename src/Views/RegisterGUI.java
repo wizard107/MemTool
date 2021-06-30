@@ -170,7 +170,7 @@ public class RegisterGUI extends MasterGUI{
     
         if (inputUser.isBlank() || inputPass.isBlank() || inputEmail.isBlank() || inputFirstname.isBlank() || inputLastname.isBlank()) {
           success.setText("Required fields missing");
-          validated = 0;
+        /** */  validated = 0;
           validateForm();
         } else if (!inputPassConf.equals(inputPass)) {
           success.setText("Passwords don't match");
