@@ -18,8 +18,9 @@ public class RegisterGUI extends MasterGUI{
     protected static TextField lastnameField;
     protected static TextField emailField;
     protected static TextField userField;
+    protected static TextField regCodeField;
     protected static JPasswordField passField;
-    protected static JPasswordField passConField;
+    protected static JPasswordField passConfField;
     protected static Button signUpBtn;
     protected static Button backBtn;
     protected static Label success;
@@ -33,10 +34,17 @@ public class RegisterGUI extends MasterGUI{
     private String inputEmail;
     private String inputFirstname;
     private String inputLastname;
+    private static int signupbtntype =0;
+    private String inputRegCode;
+    private static String genRegCode;
+    private int validated = 1;
 
 
     protected static Point rgsBox = new Point(70, 70);
     public RegisterGUI(){
+
+     // if(signupbtntype ==0) {
+
         setTitle("Registration Form");
         setSize(1000,500);
         panel.updateBounds(this);
@@ -53,17 +61,36 @@ public class RegisterGUI extends MasterGUI{
         backBtn.setFont(poppinsFontBig);
         setLocationRelativeTo(null);
         setVisible(true);
-    }
+     //}
+
+    /*  else{
+        setTitle("Registration Form");
+        setSize(1000,500);
+        panel.updateBounds(this);
+        //panel.setBackground(new Color(55, 55, 70));
+        setLocationRelativeTo(null);
+        //setComponentStyles(panel,null);
+        createRegistrationCodeFields();
+        backBtnAction();
+        signUpBtnAction();
+        
+        setComponentStyles(panel, "purple");
+        signUpBtn.setFont(poppinsFontBig);
+        backBtn.setFont(poppinsFontBig);
+        setLocationRelativeTo(null);
+        setVisible(true);
+      }*/
+    } 
 
     private void createRegistrationFields(){
         userField = new TextField(rgsBox.x, rgsBox.y + 50);
         passField = new JPasswordField();
-        passConField = new JPasswordField();
+        passConfField = new JPasswordField();
         firstnameField = new TextField(rgsBox.x, rgsBox.y + 50);
         lastnameField = new TextField(rgsBox.x, rgsBox.y + 50);
         emailField = new TextField(rgsBox.x, rgsBox.y + 50);
         lockImage = new JLabel(lockPNG);
-        lockImage.setBounds(rgsBox.x + 450,rgsBox.y + 120 , 100, 100);
+        lockImage.setBounds(rgsBox.x + 405,rgsBox.y -140, 500, 500);
         signUpBtn = new Button(rgsBox.x+680, rgsBox.y+150 + 180, "Sign Up", new Color(252,208,44), 210, 40);
         backBtn = new Button(rgsBox.x+450, rgsBox.y+150 + 180, "BACK",MasterGUI.purple,210,40);
         success = new Label(rgsBox.x, rgsBox.y + 330, "", null);
@@ -76,20 +103,20 @@ public class RegisterGUI extends MasterGUI{
         firstnameField.setBounds(rgsBox.x, rgsBox.y + 120, 210, 40);
         lastnameField.setBounds(rgsBox.x + 225, rgsBox.y + 120, 210, 40);
         passField.setBounds(rgsBox.x, rgsBox.y +190, 210, 40);
-        passConField.setBounds(rgsBox.x + 225, rgsBox.y + 190, 210, 40);
+        passConfField.setBounds(rgsBox.x + 225, rgsBox.y + 190, 210, 40);
         emailField.setBounds(rgsBox.x , rgsBox.y + 260 , 210, 40);
         
 
         placeFieldLabel(userField, "Username", panel);
         placeFieldLabel(passField, "Password", panel);
-        placeFieldLabel(passConField,"Confirm Password",panel);
+        placeFieldLabel(passConfField,"Confirm Password",panel);
         placeFieldLabel(firstnameField, "First name", panel);
         placeFieldLabel(lastnameField, "Last name", panel);
         placeFieldLabel(emailField, "Email", panel);
   
         panel.add(userField);
         panel.add(passField);
-        panel.add(passConField);
+        panel.add(passConfField);
         panel.add(firstnameField);
         panel.add(lastnameField);
         panel.add(emailField);
@@ -98,27 +125,77 @@ public class RegisterGUI extends MasterGUI{
         panel.add(success);
         panel.add(screenTitle);
         panel.add(screenDescription);
+        panel.add(lockImage);
       }
 
-  private void validateForm() {
-    inputUser = userField.getText();
-    inputPass = String.valueOf(passField.getPassword());
-    inputPassConf = String.valueOf(passConField.getPassword());
-    inputEmail = emailField.getText();
-    inputFirstname = firstnameField.getText();
-    inputLastname = lastnameField.getText();
+      /*
+      private void createRegistrationCodeFields(){
+        regCodeField = new TextField(rgsBox.x, rgsBox.y + 50);
+        lockImage = new JLabel(lockPNG);
+        lockImage.setBounds(rgsBox.x + 405,rgsBox.y -140, 500, 500);
+        signUpBtn = new Button(rgsBox.x+680, rgsBox.y+150 + 180, "Sign Up", new Color(252,208,44), 210, 40);
+        backBtn = new Button(rgsBox.x+450, rgsBox.y+150 + 180, "BACK",MasterGUI.purple,210,40);
+        success = new Label(rgsBox.x, rgsBox.y + 330, "", null);
+        screenTitle = new Label(rgsBox.x, rgsBox.y -50, "Almost done!", 1, MasterGUI.purple);
+        screenDescription = new Label(rgsBox.x -10, rgsBox.y -20, "  Please enter your personal registration code",3, MasterGUI.purple);
 
-    if (inputUser.isBlank() || inputPass.isBlank() || inputEmail.isBlank() || inputFirstname.isBlank() || inputLastname.isBlank()) {
-      success.setText("Required fields missing");
-      return;
-    } else if (!inputPassConf.equals(inputPass)) {
-      success.setText("Passwords don't match");
-      return;
-    } else if (!(inputEmail.contains("@") && inputEmail.contains("."))) {
-      success.setText("Invalid email");
+
+        regCodeField.setSize(210, regCodeField.getHeight());
+        regCodeField.setCaretColor(Color.WHITE);
+        firstnameField.setBounds(rgsBox.x, rgsBox.y + 120, 210, 40);
+        lastnameField.setBounds(rgsBox.x + 225, rgsBox.y + 120, 210, 40);
+        passField.setBounds(rgsBox.x, rgsBox.y +190, 210, 40);
+        passConfField.setBounds(rgsBox.x + 225, rgsBox.y + 190, 210, 40);
+        emailField.setBounds(rgsBox.x , rgsBox.y + 260 , 210, 40);
+        
+
+        placeFieldLabel(regCodeField, "Registration code", panel);
+  
+        panel.add(regCodeField);
+        panel.add(signUpBtn);
+        panel.add(backBtn);
+        panel.add(success);
+        panel.add(screenTitle);
+        panel.add(screenDescription);
+        panel.add(lockImage);
+      }  */  
+
+      private void validateForm() {
+        inputUser = userField.getText();
+        inputPass = String.valueOf(passField.getPassword());
+        inputPassConf = String.valueOf(passConfField.getPassword());
+        inputEmail = emailField.getText();
+        inputFirstname = firstnameField.getText();
+        inputLastname = lastnameField.getText();
+    
+        if (inputUser.isBlank() || inputPass.isBlank() || inputEmail.isBlank() || inputFirstname.isBlank() || inputLastname.isBlank()) {
+          success.setText("Required fields missing");
+          validated = 0;
+          validateForm();
+        } else if (!inputPassConf.equals(inputPass)) {
+          success.setText("Passwords don't match");
+          validateForm();
+        } else if (!(inputEmail.contains("@") && inputEmail.contains("."))) {
+          success.setText("Invalid email");
+          validateForm();
+        }
+      }
+/*
+  private void validateRegistrationCode() {
+    inputRegCode = regCodeField.getText();
+    if (inputRegCode.isBlank()) {
+      success.setText("Registration code field is empty");
+          signUpBtn.setEnabled(false);
+          validated = 0;
+          return;
+      
+    } else if(!inputRegCode.equals(genRegCode)) {
+      success.setText("Registration codes don't match");
+      signUpBtn.setEnabled(false);
+      validated =0;
       return;
     }
-  }
+  }*/
   
   private void processRegistration() {
     String encryptPass = PasswordEncryption.createHash(inputPass);
@@ -127,16 +204,17 @@ public class RegisterGUI extends MasterGUI{
       success.setText("User already exists");
       return;
     }
-    String registrationCode = generateRegistrationCode();
-    inputEmail = emailField.getText();
-    EmailHandler.sendRegistrationMail(registrationCode, inputEmail);
     DatabaseAPI.storeUser(user);
+    genRegCode = generateRegistrationCode();
+    inputEmail = emailField.getText();
+    EmailHandler.sendRegistrationMail(genRegCode, inputEmail);
     panel.removeAll();
-
-    
-    LoginGUI registerconfirm = new LoginGUI();
-    registerconfirm.setVisible(true);
     dispose();
+    LoginGUI login = new LoginGUI();
+    login.setVisible(true);
+    
+    
+    
   }
 
   private String generateRegistrationCode() {
@@ -152,8 +230,22 @@ public class RegisterGUI extends MasterGUI{
  public void signUpBtnAction() {
     signUpBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        validateForm();
-        processRegistration();
+      //  if(signupbtntype == 0) {
+          
+          validateForm();
+        //  signupbtntype = 1;
+          processRegistration();
+          
+       /* }
+        else {
+          signupbtntype=0;
+          validateRegistrationCode();
+          panel.removeAll();
+          LoginGUI login = new LoginGUI();
+          login.setVisible(true);
+          success.setText("Account created");
+          dispose();
+        }*/
       }
     });
   }

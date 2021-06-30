@@ -42,6 +42,7 @@ public class MasterGUI extends JFrame{
     public static ImageIcon pcPNG = new ImageIcon(fileRoot + imagesRoot + "admin.png");
     public static ImageIcon thinkPNG = new ImageIcon(fileRoot + imagesRoot + "think.png");
     public static ImageIcon dragonPNG = new ImageIcon(fileRoot + imagesRoot + "dragon.png");
+    public static ImageIcon lockPNG = new ImageIcon(fileRoot + imagesRoot + "lock.png");
     protected static Panel panel = new Panel();
     public static void placeFieldLabel(Component comp, String name, JPanel panel) {
         Label label = new Label(comp.getX(), comp.getY() - 25, name, null);

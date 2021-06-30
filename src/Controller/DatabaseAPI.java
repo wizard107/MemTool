@@ -800,6 +800,31 @@ public class DatabaseAPI {
         }
     }
 
+    public static boolean isAvailable(User user) {
+        String sql = "SELECT * FROM User WHERE username = ? OR email=?";
+    
+        Connection connection = connectDatabase();
+        try {
+          PreparedStatement statement = connection.prepareStatement(sql);
+          statement.setString(1, user.getUsername());
+          statement.setString(2, user.getEmail());
+    
+          ResultSet result = statement.executeQuery();
+          while (result.next()) {
+            if (result.getInt("user_id") != user.getId()) {
+              return false;
+            }
+          }
+          statement.close();
+          closeDatabase(connection);
+          return true;
+        } catch (SQLException e) {
+          e.printStackTrace();
+          closeDatabase(connection);
+          return false;
+        }
+      }
+      
     public static void main(String[] args) {
 
         //storeUser(new User("elon", "msuk", "gmail"));
