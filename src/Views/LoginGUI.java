@@ -51,7 +51,7 @@ public class LoginGUI extends MasterGUI{
       learnImage = new JLabel(learnPNG);
       learnImage.setBounds(250, -125, 700, 700);
       registerBtn = new Button(lgnBox.x, lgnBox.y + 230, "REGISTER",MasterGUI.purple,210,40);
-      success = new Label(lgnBox.x, lgnBox.y + 350, "", null);
+      success = new Label(lgnBox.x, lgnBox.y + 330, "", null);
       //backIconHero = new JLabel(loginHeroImage);
       screenTitle = new Label(lgnBox.x, lgnBox.y -50, "WELCOME BACK", 1, MasterGUI.purple);
       screenDescription = new Label(lgnBox.x -10, lgnBox.y -20, "Ready to learn something new today?",3, MasterGUI.purple);
