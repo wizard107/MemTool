@@ -42,7 +42,7 @@ public class MainGUI extends MasterGUI{
         this.user.initializePositions();
         setTitle("MemTool");
         setSize(1200,700);
-        remove(panel); // removes LoginGUI panel content as panel from mastergui still saved it
+        remove(panel); 
         
         tabPoint = new Point(0,0);
         homePanel = new HomeView(frame, user);//user muss geaddet werden
@@ -76,8 +76,6 @@ public class MainGUI extends MasterGUI{
         deckTab = new Button(tabPoint.x + 730, tabPoint.y, "Manage Decks", deckPanel);
         //searchTab = new Button(tabPoint.x + 730, tabPoint.y, "         Search", searchPanel);
         profileTab = new Button(tabPoint.x + 860, tabPoint.y, "         Profile", profilePanel);
-        //searchTab.setSize(65,50);
-        //profileTab.setSize(65,50);
         sidebar.add(homeTab);
         sidebar.add(deckTab);
         sidebar.add(profileTab);
@@ -97,7 +95,6 @@ public class MainGUI extends MasterGUI{
             });
           });
 
-         //you can customize font, inactive acitve
     }
 
     private void createLogoutTab(){
@@ -139,7 +136,6 @@ public class MainGUI extends MasterGUI{
       Label logoutlabel = new Label(30, 30, prompt, MasterGUI.purple);
       Button yes = new Button(30, 60, "Yes", MasterGUI.black_gray);
       Button no = new Button(140, 60, "No", MasterGUI.black_gray);
-      //no.setDark(false);
   
       JPanel logoutp = new JPanel();
       logoutp.setLayout(null);
@@ -205,7 +201,6 @@ public class MainGUI extends MasterGUI{
    
     public static void main(String[] args) throws Exception {
         System.out.println("Starting MainGUI");
-        //User guest = DatabaseAPI.getUser("Admin");
         User guest = DatabaseAPI.getUser("Admin");
         MainGUI system = new MainGUI(guest);
         system.setLocationRelativeTo(null);

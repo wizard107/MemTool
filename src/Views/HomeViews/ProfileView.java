@@ -45,9 +45,7 @@ public class ProfileView extends Panel{
         Label title = new Label(point.x + 60, point.y , "EDIT YOUR PROFILE", MasterGUI.black, 30f);
         title.setSize(500,70);
         title.setForeground(MasterGUI.black);
-        //JLabel pcImage = new JLabel(MasterGUI.pcPNG);
-        //pcImage.setBounds(point.x + 600, point.y-100, 700, 700);
-        //profilePanel.add(pcImage);
+        
         profilePanel.add(title);
         createView();
         add(profilePanel);

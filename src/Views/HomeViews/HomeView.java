@@ -33,21 +33,15 @@ public class HomeView extends Panel{
     public HomeView(JFrame frame, User user){
         super(frame);
         this.user = user;
-        //this.decks = user.getDecks();
         this.decks = user.getDecks();
         HomeView.frame = frame;
         superPanel = new Panel();
         subPanel = new Panel();
-        //superPanel.setBounds(0,0, frame.getWidth(), frame.getHeight()*2+50);
         superPanel.setPreferredSize(new Dimension(frame.getWidth(), frame.getHeight()*2+50));
         superPanel.setBackground(MasterGUI.babyblue);
         Label x = new Label(250, 1200, "WELCOME BACK", 1, MasterGUI.purple);
         superPanel.add(x);
-        /*Deck[] deck = new Deck[2];
-        deck[0] = new Deck();
-        deck[1] = new Deck();
-        String[] test = new String[3];
-        *///for(int i=0;i<decks.size();i++){test[i] = "#durability";} //limit string in size because it becomes too long otherwise
+   
         drawDecks(superPanel);
         drawProfile();
         scroller = makeScroller(superPanel);
@@ -64,11 +58,9 @@ public class HomeView extends Panel{
     }
     public static void repaintHomeView(){
         superPanel.removeAll();
-        //user.updateEventList();
         decks = user.getDecks();
         drawDecks(superPanel);
         drawProfile();
-        //scroller = makeScroller(superPanel);
         frame.repaint();
     }
 
@@ -79,8 +71,6 @@ public class HomeView extends Panel{
         profileBox.setBackground(MasterGUI.black_gray);
         Label username = new Label(5,20, user.getUsername(), MasterGUI.black,24f);
         username.setForeground(MasterGUI.white);
-        //Panel icon = new Panel();
-        //icon.setBounds(80, 110 , 70, 70);
         Panel deckbg = new Panel();
         deckbg.setBounds(25, 110, 200, 50);
         deckbg.setBackground(MasterGUI.yellow);
@@ -105,7 +95,6 @@ public class HomeView extends Panel{
         cardsNewTxt.setFont(MasterGUI.poppinsFontBig.deriveFont(10f));
         JLabel thinkImage = new JLabel(MasterGUI.thinkPNG);
         thinkImage.setBounds(-40, 200, 500, 500);
-        //icon.setBackground(MasterGUI.purple);
         superPanel.add(decksTotalTxt);
         superPanel.add(decksTotal);
         superPanel.add(cardsLearnedTxt);
@@ -117,7 +106,6 @@ public class HomeView extends Panel{
         profileBox.add(username);
         superPanel.add(welcome);
         superPanel.add(deckbg);
-        //superPanel.add(icon);
         superPanel.add(profileBox);
         superPanel.add(thinkImage);
     }
@@ -137,7 +125,6 @@ public class HomeView extends Panel{
             Label due0 = new Label(point.x + 530, point.y +45 + deckSpace, String.valueOf(deck.calcDue()), MasterGUI.green, 20f);
             Label failed0 = new Label(point.x + 575, point.y +45 + deckSpace, String.valueOf(deck.calcAgain()), MasterGUI.red, 20f);
             Label neu0 = new Label(point.x + 640, point.y +45 + deckSpace, String.valueOf(deck.calcNew()),MasterGUI.blue, 20f);
-            //Map<Integer,String> deckTags  = deck.getTags();
             List<String> deckTags = new ArrayList<>(deck.getTags().values());
             int i=0;
             for(String deckTag: deckTags){
@@ -167,10 +154,7 @@ public class HomeView extends Panel{
                 Panel viewMode = new CardView(frame, deck,user);
                 MainGUI.switchPanel(viewMode);
             });
-            //Panel icon = new Panel();
-            //icon.setBounds(point.x + 5, point.y + 10 + deckSpace, 45, 45);
-            //icon.setBackground(MasterGUI.purple);
-            //panel.add(icon);
+  
             panel.add(title);
             panel.add(viewBtn);
             panel.add(learnBtn);
