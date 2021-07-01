@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
 import Model.Deck;
 import Model.User;
@@ -76,7 +77,7 @@ public class HomeView extends Panel{
         Panel profileBox = new Panel();
         profileBox.setBounds(20, 50, 210, 220);
         profileBox.setBackground(MasterGUI.black_gray);
-        Label username = new Label(80,20, user.getUsername(), MasterGUI.black,24f);
+        Label username = new Label(5,20, user.getUsername(), MasterGUI.black,24f);
         username.setForeground(MasterGUI.white);
         //Panel icon = new Panel();
         //icon.setBounds(80, 110 , 70, 70);
