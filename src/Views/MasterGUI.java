@@ -56,10 +56,8 @@ public class MasterGUI extends JFrame{
     }
 
     public MasterGUI() {
-        //setIconImage(favicon.getImage());
         setResizable(false);
         setLayout(null);
-        //panel.setBackground(new Color(55, 55, 70));
         panel.setBackground(new Color(255, 255, 255));
         panel.setLayout(null);
         add(panel);
@@ -70,10 +68,6 @@ public class MasterGUI extends JFrame{
           }
         
           try {
-            /*bodyFont = Font
-                .createFont(Font.TRUETYPE_FONT, new File(fileRoot + "/assets/fonts/UniversLTStd.otf"))
-                .deriveFont(13f);
-      */
             poppinsFont = Font
                 .createFont(Font.TRUETYPE_FONT, new File(fileRoot + "/assets/fonts/Poppins-Regular.ttf"))
                 .deriveFont(16f);
@@ -86,7 +80,6 @@ public class MasterGUI extends JFrame{
           }  
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-              //DatabaseAPI.closeDatabase();
               System.exit(0);
             }
         });
@@ -100,7 +93,6 @@ public class MasterGUI extends JFrame{
           background = new Color(60, 60, 75);
         } else if (colorMode == "light") {
           foreground = new Color(60, 60, 75);
-          //foreground = new Color(128,131,201);
           background = new Color(240, 240, 245);
         }
           else if (colorMode == "purple"){
@@ -114,13 +106,11 @@ public class MasterGUI extends JFrame{
         for (Component c : panel.getComponents()) {
           if (c instanceof JLabel) {
             if (c instanceof Label && !((Label) c).getEditable()) {
-              //c.setFont(new Font("Arial", Font.PLAIN, 15));
               c.setFont(poppinsFont);
               c.setForeground(foreground);
             }
           }
           if (c instanceof JTextField) {
-            //c.setFont(new Font("Arial", Font.PLAIN, 15));
             c.setFont(poppinsFont);
             c.setBackground(background);
             c.setForeground(foreground);

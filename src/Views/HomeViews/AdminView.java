@@ -108,7 +108,6 @@ public class AdminView extends Panel {
                     adminPanel.add(delete);
                     nameField.setText(changeUser.getUsername());
                     emailField.setText(changeUser.getEmail());
-                    //pwField.setText("");
                     adminPanel.repaint();
                 }catch(NullPointerException ex){
                     System.out.println("No such user exists!");

@@ -7,9 +7,7 @@ import javax.swing.*;
 import Views.MasterGUI;
 
 public class Label extends JLabel{
-  /*
-  previously isUnset
-  */
+  
   private boolean isEditable = false;
   private boolean isHeader = false;
   public Label() {

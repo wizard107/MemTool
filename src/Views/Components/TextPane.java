@@ -13,7 +13,6 @@ public class TextPane extends JTextPane{
         this.setBounds(x, y, w, h);
         defaultSettings();
       }
-      //previously setdefaultstyle
       public void defaultSettings(){
         setCaretColor(new Color(60, 60, 75));
         setBackground(new Color(240, 240, 245));

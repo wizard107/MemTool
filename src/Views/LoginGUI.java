@@ -24,7 +24,6 @@ public class LoginGUI extends MasterGUI{
   protected Label screenTitle;
   protected Label screenDescription;
   
-  /** Pixel coordinates box for content */
   protected static Point lgnBox = new Point(70, 70);
     public LoginGUI() {
         setTitle("Scheduler Login");
@@ -34,7 +33,6 @@ public class LoginGUI extends MasterGUI{
         createLoginFields();
         registerBtnAction();
         loginBtnAction();
-        //getRootPane().setDefaultButton(loginBtn);
         
         setComponentStyles(panel, "purple");
         loginBtn.setFont(poppinsFontBig);
@@ -45,19 +43,15 @@ public class LoginGUI extends MasterGUI{
     private void createLoginFields(){
       userField = new TextField(lgnBox.x, lgnBox.y + 50);
       passField = new JPasswordField();
-      //loginBtn = new Button(lgnBox.x, lgnBox.y + 180, "Login", new Color(116, 207, 183));
       loginBtn = new Button(lgnBox.x, lgnBox.y + 180, "LOGIN", new Color(252,208,44), 210, 40);
 
       learnImage = new JLabel(learnPNG);
       learnImage.setBounds(250, -125, 700, 700);
       registerBtn = new Button(lgnBox.x, lgnBox.y + 230, "REGISTER",MasterGUI.purple,210,40);
       success = new Label(lgnBox.x, lgnBox.y + 330, "", null);
-      //backIconHero = new JLabel(loginHeroImage);
       screenTitle = new Label(lgnBox.x, lgnBox.y -50, "WELCOME BACK", 1, MasterGUI.purple);
       screenDescription = new Label(lgnBox.x -10, lgnBox.y -20, "Ready to learn something new today?",3, MasterGUI.purple);
-      //backIconHero.setBounds(200, 250, 400, 400);
       userField.setSize(210, userField.getHeight());
-      //userField.setSize(210, 40);
       userField.setCaretColor(Color.WHITE);
       passField.setBounds(lgnBox.x, lgnBox.y + 120, 210, 40);
       placeFieldLabel(userField, "Username", panel);
@@ -73,16 +67,7 @@ public class LoginGUI extends MasterGUI{
       panel.add(screenDescription);
     }
 
-    /*public void loginBtnAction(){
-      JFrame frame = this;
-      loginBtn.addActionListener(new ActionListener(){
-        public void actionPerformed(ActionEvent e){
-        frame.dispose();
-        frame.remove(panel); //removes LoginGUI screen, after that new MainGUI is started
-        new MainGUI();
-        }
-      });
-    }*/
+    
     public void loginBtnAction() {
       JFrame frame = this;
       loginBtn.addActionListener(new ActionListener() {
@@ -105,8 +90,7 @@ public class LoginGUI extends MasterGUI{
               success.setText("Wrong username or password");
               passField.setText("");
             }
-          /* catch (SQLException sqlException) {
-            sqlException.printStackTrace();*/
+
           }catch(Exception sql){
                 System.out.println("LoginGUI"); 
                 sql.printStackTrace();

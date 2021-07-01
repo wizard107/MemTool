@@ -31,7 +31,6 @@ public class Button extends JButton implements MouseListener {
         setDark(true);
         filled = true;
       }
-    //only for tabbuttons
     public Button(int x, int y, String text, JPanel switchTo) {
       super(text);
       defaultSettings();
@@ -108,13 +107,11 @@ public class Button extends JButton implements MouseListener {
     public Boolean getDark() {
       return this.dark;
     }
-    //for tab buttons, to make them the same colour as sidebar
     public void setTab() {
       if (getTab()) return;
       setSize(130, 50);
       setHorizontalAlignment(SwingConstants.LEADING);
       setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-      //setFont(this.getFont().deriveFont(13f));
       setFont(MasterGUI.poppinsFont);
       setForeground(Color.WHITE);
       setColor(MasterGUI.purple.darker());
