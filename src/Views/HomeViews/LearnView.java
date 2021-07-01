@@ -180,7 +180,7 @@ public class LearnView extends Panel{
                     Card card = queue.poll();
                     int num = card.getDueTime();
                     card.setDueTime(num+3);
-                    if(card.getDueTime()<10){
+                    if((card.getDueTime()<10)&&(card.getWasForgotten()||card.getIsNew())){
                         queue.add(card);
                     }  
                     else{
@@ -247,7 +247,7 @@ public class LearnView extends Panel{
                 Card card = queue.poll();
                 int num = card.getDueTime();
                     card.setDueTime(num+2);
-                    if(card.getDueTime()<10){
+                    if((card.getDueTime()<10)&&(card.getWasForgotten()||card.getIsNew())){
                         queue.add(card);
                     }  
                     else{
